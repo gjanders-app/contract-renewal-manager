@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contract Renewal Manager</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;color:#1a1a1a;background:#f5f5f3;min-height:100vh}
+.app{max-width:900px;margin:0 auto;padding:1.5rem 1rem}
+h1{font-size:20px;font-weight:600;margin-bottom:4px}
+.subtitle{font-size:13px;color:#666;margin-bottom:1.5rem}
+.tabs{display:flex;border-bottom:1.5px solid #e0e0de;margin-bottom:1.5rem}
+.tab{padding:8px 20px;font-size:14px;cursor:pointer;border:none;background:none;color:#666;border-bottom:2.5px solid transparent;margin-bottom:-1.5px;font-family:inherit;font-weight:400}
+.tab.on{color:#1a1a1a;border-bottom-color:#1a1a1a;font-weight:600}
+.tab:hover:not(.on){color:#1a1a1a}
+.pg{display:none}.pg.on{display:block}
+.sg{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:1.5rem}
+.sc{background:#fff;border-radius:10px;padding:12px 14px;border:1px solid #e8e8e6}
+.sc .lb{font-size:12px;color:#888;margin-bottom:4px}
+.sc .vl{font-size:24px;font-weight:600}
+.vl.r{color:#c0392b}.vl.a{color:#d68910}.vl.g{color:#27ae60}
+.bar{display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap;align-items:center}
+.bar input[type=text]{flex:1;min-width:140px;max-width:220px;padding:7px 10px;border:1px solid #ddd;border-radius:8px;font-size:13px;font-family:inherit}
+.bar select{padding:7px 10px;border:1px solid #ddd;border-radius:8px;font-size:13px;font-family:inherit;min-width:150px}
+.bp{display:inline-flex;align-items:center;gap:5px;background:#1a1a1a;color:#fff;border:none;padding:8px 16px;border-radius:8px;font-size:13px;cursor:pointer;font-family:inherit;font-weight:500}
+.bp:hover{background:#333}
+.bs{display:inline-flex;align-items:center;gap:5px;background:#fff;color:#1a1a1a;border:1px solid #ddd;padding:7px 12px;border-radius:8px;font-size:12px;cursor:pointer;font-family:inherit}
+.bs:hover{background:#f5f5f3}
+.bs.rd{color:#c0392b;border-color:#e8b4b4}
+.cl{display:flex;flex-direction:column;gap:10px}
+.cc{background:#fff;border:1px solid #e8e8e6;border-radius:12px;padding:14px 16px}
+.cc.urgent{border-left:4px solid #c0392b;border-radius:0 12px 12px 0}
+.cc.soon{border-left:4px solid #d68910;border-radius:0 12px 12px 0}
+.cc.ok{border-left:4px solid #27ae60;border-radius:0 12px 12px 0}
+.cc.expired{border-left:4px solid #aaa;border-radius:0 12px 12px 0}
+.r1{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.lft{display:flex;gap:10px;align-items:center}
+.ico{width:38px;height:38px;border-radius:10px;background:#f5f5f3;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.ctit{font-size:15px;font-weight:600}
+.csub{font-size:12px;color:#888;margin-top:2px}
+.rgt{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0}
+.bdg{display:inline-flex;align-items:center;gap:3px;font-size:11px;padding:3px 9px;border-radius:99px;font-weight:600}
+.bu{background:#fdecea;color:#922b21}.bw{background:#fef9e7;color:#7d6608}.bg{background:#eafaf1;color:#1e8449}.bx{background:#f5f5f5;color:#888}
+.acts{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}
+.dts{display:flex;gap:16px;margin-top:10px;flex-wrap:wrap}
+.dt{font-size:12px;color:#888}
+.dt b{color:#1a1a1a;font-weight:600}
+.tip{margin-top:10px;padding:9px 11px;background:#eaf4fb;border-radius:8px;font-size:12px;color:#1a5276;line-height:1.5;border-left:3px solid #2980b9}
+.aib{margin-top:10px;padding:12px;background:#f9f9f8;border-radius:10px;font-size:13px;line-height:1.6;border:1px solid #e8e8e6}
+.ail{font-size:11px;color:#888;margin-bottom:6px}
+.hrow{display:flex;gap:8px;margin-bottom:6px}
+.hdot{width:7px;height:7px;border-radius:50%;background:#ccc;margin-top:5px;flex-shrink:0}
+.htxt{font-size:12px;color:#888;line-height:1.5}
+.emp{text-align:center;padding:3rem 1rem;color:#aaa}
+.psec{background:#fff;border:1px solid #e8e8e6;border-radius:12px;padding:16px;margin-bottom:1rem}
+.psec h3{font-size:14px;font-weight:600;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid #f0f0ee}
+.fl{margin-bottom:1rem}
+.fl label{display:block;font-size:12px;color:#666;margin-bottom:4px;font-weight:500}
+.fl input,.fl select,.fl textarea{width:100%;padding:7px 10px;border:1px solid #ddd;border-radius:8px;font-size:13px;font-family:inherit}
+.fl input:focus,.fl select:focus{outline:none;border-color:#1a1a1a}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.f3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.acard{background:#fff;border:1px solid #e8e8e6;border-radius:12px;padding:14px 16px;margin-bottom:10px}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:flex-start;justify-content:center;z-index:100;padding:2rem 1rem;overflow-y:auto}
+.modal{background:#fff;border-radius:14px;padding:1.5rem;width:100%;max-width:520px;box-shadow:0 20px 60px rgba(0,0,0,0.2)}
+.modal h2{font-size:18px;font-weight:600;margin-bottom:1.25rem}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:1.25rem}
+.cpan{background:#f9f9f8;border-radius:10px;padding:12px;margin-bottom:1rem;border:1px solid #e8e8e6}
+.cpan h4{font-size:13px;font-weight:600;margin-bottom:8px}
+.cfl{display:flex;justify-content:space-between;font-size:12px;padding:4px 0;border-bottom:1px solid #f0f0ee}
+.cfl:last-child{border:none}
+.cfl .cl{color:#888}
+.ncbb{display:inline-flex;align-items:center;gap:3px;background:#eafaf1;color:#1e8449;font-size:11px;padding:2px 8px;border-radius:99px;font-weight:600}
+.sbadge{font-size:11px;padding:5px 12px;border-radius:8px;margin-bottom:1rem;display:inline-block;font-weight:500}
+.sbadge.ok{background:#eafaf1;color:#1e8449}
+.sbadge.warn{background:#fef9e7;color:#7d6608}
+.dots::after{content:'.';animation:dt 1s steps(3,end) infinite}
+@keyframes dt{0%,33%{content:'.'}34%,66%{content:'..'}67%{content:'...'}}
+.section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
+.section-header h2{font-size:16px;font-weight:600}
+.section-header p{font-size:12px;color:#888;margin-top:2px}
+@media(max-width:600px){.f2,.f3{grid-template-columns:1fr}.acts{flex-direction:column}.bar{flex-direction:column;align-items:stretch}}
+</style>
+</head>
+<body>
+<div class="app">
+  <h1>📋 Contract Renewal Manager</h1>
+  <p class="subtitle">Track expiry dates · Get timely reminders · Find better deals</p>
+
+  <div class="tabs">
+    <button class="tab on" onclick="ST('contracts')">📋 Contracts</button>
+    <button class="tab" onclick="ST('profile')">👤 Profile</button>
+    <button class="tab" onclick="ST('advice')">💡 Advice</button>
+  </div>
+
+  <!-- CONTRACTS TAB -->
+  <div id="pg-contracts" class="pg on">
+    <div id="storemsg"></div>
+    <div class="sg" id="SG"></div>
+    <div class="bar">
+      <input type="text" id="QQ" placeholder="🔍 Search contracts..." oninput="RL()">
+      <select id="FF" onchange="RL()">
+        <option value="">All contracts</option>
+        <option value="urgent">Urgent (≤14 days)</option>
+        <option value="soon">Due soon (≤30 days)</option>
+        <option value="ok">OK</option>
+      </select>
+      <button class="bp" onclick="OA()">+ Add contract</button>
+      <button class="bs" onclick="XC()">📅 Export reminders</button>
+    </div>
+    <div class="cl" id="CL"></div>
+  </div>
+
+  <!-- PROFILE TAB -->
+  <div id="pg-profile" class="pg">
+    <div class="section-header">
+      <div><h2>👤 Your profile</h2><p>Stored details used when searching for deals</p></div>
+      <button class="bp" onclick="SP()">💾 Save profile</button>
+    </div>
+
+    <div class="psec"><h3>👤 Personal details</h3>
+      <div class="f2"><div class="fl"><label>Full name</label><input id="pn" type="text" placeholder="John Smith"></div><div class="fl"><label>Date of birth</label><input id="pd" type="date"></div></div>
+      <div class="fl"><label>Address (house number & street)</label><input id="pa" type="text" placeholder="123 Main Street"></div>
+      <div class="f2"><div class="fl"><label>Town / City</label><input id="ptw" type="text" placeholder="Sheffield"></div><div class="fl"><label>Postcode</label><input id="ppc" type="text" placeholder="S1 1AA"></div></div>
+      <div class="f2"><div class="fl"><label>Phone</label><input id="pph" type="tel" placeholder="07700 000000"></div><div class="fl"><label>Email</label><input id="pe" type="email" placeholder="you@example.com"></div></div>
+      <div class="f2"><div class="fl"><label>Joint policyholder name</label><input id="pjn" type="text" placeholder="Partner's name"></div><div class="fl"><label>Joint policyholder DOB</label><input id="pjd" type="date"></div></div>
+    </div>
+
+    <div class="psec"><h3>🚗 Vehicle details</h3>
+      <div class="f2"><div class="fl"><label>Registration</label><input id="vr" type="text" placeholder="AB12 CDE"></div><div class="fl"><label>Make & model</label><input id="vm" type="text" placeholder="Ford Focus"></div></div>
+      <div class="f3"><div class="fl"><label>Year</label><input id="vy" type="number" placeholder="2019"></div><div class="fl"><label>Est. value (£)</label><input id="vv" type="number" placeholder="8000"></div><div class="fl"><label>Annual mileage</label><input id="vl" type="number" placeholder="8000"></div></div>
+      <div class="f2"><div class="fl"><label>Kept overnight</label><select id="vk"><option>Driveway</option><option>Garage</option><option>Street</option><option>Car park</option></select></div><div class="fl"><label>Named drivers</label><input id="vd" type="text" placeholder="Jane Smith (age 35)"></div></div>
+    </div>
+
+    <div class="psec"><h3>🏠 Property details</h3>
+      <div class="f3"><div class="fl"><label>Property type</label><select id="ht"><option>Detached</option><option>Semi-detached</option><option>Terraced</option><option>Flat/apartment</option><option>Bungalow</option></select></div><div class="fl"><label>Year built</label><input id="hy" type="number" placeholder="1985"></div><div class="fl"><label>Bedrooms</label><input id="hb" type="number" placeholder="3"></div></div>
+      <div class="f3"><div class="fl"><label>Wall construction</label><select id="hw"><option>Standard brick</option><option>Stone</option><option>Timber frame</option><option>Concrete</option><option>Other</option></select></div><div class="fl"><label>Roof type</label><select id="hrf"><option>Pitched (tiles/slate)</option><option>Flat roof</option><option>Mixed</option></select></div><div class="fl"><label>Work from home?</label><select id="hwfh"><option>No</option><option>Yes — occasionally</option><option>Yes — full time</option></select></div></div>
+      <div class="f3"><div class="fl"><label>Rebuild value (£)</label><input id="hrv" type="number" placeholder="200000"></div><div class="fl"><label>Contents value (£)</label><input id="hcv" type="number" placeholder="40000"></div><div class="fl"><label>Voluntary excess (£)</label><input id="hvex" type="number" placeholder="0"></div></div>
+      <div class="f2"><div class="fl"><label>Security features</label><input id="hs" type="text" placeholder="Alarm, deadbolts, CCTV..."></div><div class="fl"><label>Ever flooded?</label><select id="hfl"><option>No</option><option>Yes — once</option><option>Yes — more than once</option></select></div></div>
+      <div class="f2"><div class="fl"><label>Buildings claims (last 5 years)</label><input id="hbc" type="number" placeholder="0" min="0"></div><div class="fl"><label>Contents claims (last 5 years)</label><input id="hcc" type="number" placeholder="0" min="0"></div></div>
+      <div class="f2"><div class="fl"><label>Buildings NCB (years)</label><input id="hbncb" type="number" placeholder="0" min="0"></div><div class="fl"><label>Contents NCB (years)</label><input id="hcncb" type="number" placeholder="0" min="0"></div></div>
+    </div>
+
+    <div class="psec"><h3>⚡ Energy details</h3>
+      <div class="f2"><div class="fl"><label>Annual electricity usage (kWh)</label><input id="ek" type="number" placeholder="3200"></div><div class="fl"><label>Annual gas usage (kWh)</label><input id="gk" type="number" placeholder="12000"></div></div>
+      <div class="f3"><div class="fl"><label>Current elec unit rate (p/kWh)</label><input id="eur" type="number" step="0.01" placeholder="e.g. 24.5"></div><div class="fl"><label>Current gas unit rate (p/kWh)</label><input id="gur" type="number" step="0.01" placeholder="e.g. 5.8"></div><div class="fl"><label>Standing charge (p/day)</label><input id="esc" type="number" step="0.01" placeholder="e.g. 53.4"></div></div>
+      <div class="f3"><div class="fl"><label>Payment method</label><select id="ep"><option>Direct debit (monthly)</option><option>Direct debit (quarterly)</option><option>Prepayment meter</option><option>On receipt of bill</option></select></div><div class="fl"><label>Meter type</label><select id="em"><option>Smart meter</option><option>Standard meter</option></select></div><div class="fl"><label>Green energy preference</label><select id="egr"><option>No preference</option><option>Prefer green tariffs</option><option>Green only</option></select></div></div>
+    </div>
+
+    <div class="psec"><h3>📱 Mobile details</h3>
+      <div class="f2"><div class="fl"><label>Your network</label><input id="mn" type="text" placeholder="EE, O2, Vodafone..."></div><div class="fl"><label>Your handset</label><input id="mh" type="text" placeholder="iPhone 13"></div></div>
+      <div class="f2"><div class="fl"><label>Partner's network</label><input id="ppn" type="text" placeholder="Three, Sky..."></div><div class="fl"><label>Partner's handset</label><input id="pph2" type="text" placeholder="iPhone 12 (damaged screen)"></div></div>
+    </div>
+
+    <div class="psec"><h3>🏦 Mortgage details</h3>
+      <div class="f2"><div class="fl"><label>Lender</label><input id="ml" type="text" placeholder="Nationwide"></div><div class="fl"><label>Outstanding balance (£)</label><input id="mb" type="number" placeholder="174678"></div></div>
+      <div class="f3"><div class="fl"><label>Monthly payment (£)</label><input id="mpy" type="number" placeholder="833"></div><div class="fl"><label>Current rate (%)</label><input id="mrt" type="number" step="0.01" placeholder="0.94"></div><div class="fl"><label>Property value (£)</label><input id="mpv" type="number" placeholder="360000"></div></div>
+      <div class="fl"><label>Years remaining</label><input id="myr" type="number" placeholder="19"></div>
+    </div>
+
+    <div style="display:flex;justify-content:flex-end;margin-top:.5rem">
+      <button class="bp" onclick="SP()">💾 Save profile</button>
+    </div>
+  </div>
+
+  <!-- ADVICE TAB -->
+  <div id="pg-advice" class="pg">
+    <div class="section-header">
+      <div><h2>💡 Latest advice</h2><p id="AS">Not yet fetched</p></div>
+      <button class="bp" onclick="FA()">🔄 Refresh advice</button>
+    </div>
+    <div id="AC">
+      <div class="emp">
+        <p style="font-size:32px;margin-bottom:12px">💡</p>
+        <p style="margin-bottom:6px;font-size:15px">Hit "Refresh advice" to get the latest UK consumer tips</p>
+        <p style="font-size:12px">Sources: MoneySavingExpert (Martin Lewis) · Which? · Citizens Advice · Ofgem</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CONTAINER -->
+<div id="MC" style="display:none"></div>
+
+<script>
+const TY=[
+  {t:'car_insurance',l:'Car insurance',i:'🚗',r:27,tip:'Get quotes 25–30 days before expiry — statistically the cheapest window. Never auto-renew. Compare on Compare the Market, GoCompare, MoneySuperMarket and Confused.',ncb:1},
+  {t:'home_insurance',l:'Home insurance',i:'🏠',r:28,tip:'Shop 3–4 weeks before renewal. Bundle buildings and contents for discounts. Loyalty penalty is real — new customers consistently pay less.',homencb:1},
+  {t:'energy_combined',l:'Gas & Electric (combined)',i:'⚡',r:42,tip:'Use Ofgem-accredited comparison sites. Fix before your term ends to avoid the standard variable tariff. Check Cornwall Insight forecasts before deciding whether to fix or wait.',kwh:1},
+  {t:'energy_elec',l:'Electricity only',i:'💡',r:42,tip:'Compare electricity-only tariffs on Uswitch or MoneySuperMarket. Check the current Ofgem price cap and whether fixing now makes sense.',kwh:1},
+  {t:'energy_gas',l:'Gas only',i:'🔥',r:42,tip:'Compare gas-only tariffs on Uswitch or MoneySuperMarket.',kwh:1},
+  {t:'broadband',l:'Broadband / Phone',i:'📡',r:30,tip:'Compare on Uswitch or MoneySuperMarket. Negotiate with your existing provider first — retention teams often beat advertised prices.',three:1},
+  {t:'tv',l:'TV / Streaming',i:'📺',r:14,tip:'Call to cancel and wait for a win-back offer. Bundle deals with broadband can save significantly.'},
+  {t:'mobile',l:'Mobile phone',i:'📱',r:7,tip:"Check your network's upgrade and exit policy. SIM-only deals on Uswitch are often far cheaper than staying on a handset contract.",three:1,pers:1},
+  {t:'mortgage',l:'Mortgage',i:'🏦',r:120,tip:'Start looking 3–6 months before your fixed term ends. Lower LTV means better rates. Compare both your existing lender and whole-of-market deals.',mort:1},
+  {t:'mot',l:'Car MOT',i:'🔧',r:21,tip:'MOT can be done up to a month early without losing your anniversary date. Book mid-week for cheaper rates. Halfords and Kwik Fit often have deals.'},
+  {t:'car_tax',l:'Car tax',i:'📋',r:21,tip:'Renew at gov.uk/renew-vehicle-tax. DVLA sends postal reminders but set a digital reminder too.'},
+  {t:'norton',l:'Cyber security (Norton)',i:'🛡️',r:14,tip:'Check norton.com/deals before renewing — deals are almost always better than the auto-renewal price.',dp:'Norton'},
+  {t:'parking',l:'Parking permit',i:'🅿️',r:14,tip:'Renew via your local council website. App will search for any grace period policy when your reminder triggers.'},
+  {t:'rac',l:'Motor breakdown cover',i:'🚨',r:21,tip:'Breakdown cover providers often offer better deals as expiry approaches. Compare RAC, AA, Green Flag and Halfords on Confused.com or MoneySuperMarket.'},
+  {t:'credit_card',l:'Credit card (0% balance transfer)',i:'💳',r:42,tip:'Compare using transfer fee % per year = fee% ÷ period in years. Aim for the lowest fee combined with the longest 0% term.',cc:1},
+  {t:'other',l:'Other / Custom',i:'📄',r:21,tip:'Shop around using comparison sites before your renewal date.'},
+];
+
+let C=[],P={},AH=null,AD=null;
+
+function save(){try{localStorage.setItem('crm_c',JSON.stringify(C));localStorage.setItem('crm_p',JSON.stringify(P));showBadge(true);}catch(e){showBadge(false);}}
+function showBadge(ok){const el=document.getElementById('storemsg');if(el)el.innerHTML=ok?'<span class="sbadge ok">✓ Data saving automatically</span>':'<span class="sbadge warn">⚠ Storage unavailable — data will not persist between sessions</span>';}
+
+function init(){
+  try{const c=localStorage.getItem('crm_c');if(c)C=JSON.parse(c);}catch(e){}
+  try{const p=localStorage.getItem('crm_p');if(p)P=JSON.parse(p);}catch(e){}
+  try{const a=localStorage.getItem('crm_a');if(a){const d=JSON.parse(a);AH=d.h;AD=d.d;}}catch(e){}
+  if(!C.length)WZ();else{FP();RA();}
+  showBadge(true);
+}
+
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,5);}
+function du(d){if(!d)return 9999;const t=new Date();t.setHours(0,0,0,0);return Math.round((new Date(d+'T00:00:00')-t)/86400000);}
+function fd(d){if(!d)return'No date set';return new Date(d+'T00:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});}
+function gt(t){return TY.find(x=>x.t===t)||TY[TY.length-1];}
+function gs(n){if(n===9999)return'ok';if(n<0)return'expired';if(n<=14)return'urgent';if(n<=30)return'soon';return'ok';}
+
+function autoLabel(type){
+  const ti=gt(type);
+  const ex=C.filter(c=>c.t===type);
+  if(!ex.length)return ti.l;
+  let max=1;
+  ex.forEach(c=>{const m=c.lb.match(/\s(\d+)$/);if(m)max=Math.max(max,parseInt(m[1]));else max=Math.max(max,1);});
+  return ti.l+' '+(max+1);
+}
+
+function RA(){RS();RL();if(AD)document.getElementById('AS').textContent='Last updated '+AD;if(AH)document.getElementById('AC').innerHTML=AH;}
+
+function RS(){
+  let u=0,s=0,o=0;
+  C.forEach(c=>{const n=du(c.e),st=gs(n);if(st==='urgent')u++;else if(st==='soon')s++;else if(st==='ok')o++;});
+  document.getElementById('SG').innerHTML=`
+    <div class="sc"><div class="lb">Total contracts</div><div class="vl">${C.length}</div></div>
+    <div class="sc"><div class="lb">Action needed</div><div class="vl r">${u}</div></div>
+    <div class="sc"><div class="lb">Due soon (30d)</div><div class="vl a">${s}</div></div>
+    <div class="sc"><div class="lb">All clear</div><div class="vl g">${o}</div></div>`;
+}
+
+function RL(){
+  const q=document.getElementById('QQ').value.toLowerCase();
+  const f=document.getElementById('FF').value;
+  let list=C.slice().sort((a,b)=>du(a.e)-du(b.e));
+  if(q)list=list.filter(c=>c.lb.toLowerCase().includes(q)||(c.pr||'').toLowerCase().includes(q));
+  if(f)list=list.filter(c=>gs(du(c.e))===f);
+  const el=document.getElementById('CL');
+  if(!list.length){el.innerHTML='<div class="emp"><p style="font-size:32px;margin-bottom:12px">📋</p><p>No contracts yet — add your first one above</p></div>';return;}
+  el.innerHTML=list.map(RC).join('');
+}
+
+function RC(c){
+  const n=du(c.e),st=gs(n),ti=gt(c.t);
+  const dt=n===9999?'<span style="color:#e67e22">⚠ No expiry date set</span>':n<0?`Expired ${Math.abs(n)}d ago`:n===0?'Expires today!':n===1?'1 day left':`${n} days left`;
+  const bd=st==='expired'?'<span class="bdg bx">Expired</span>':st==='urgent'?'<span class="bdg bu">⚠ Urgent</span>':st==='soon'?'<span class="bdg bw">⏰ Due soon</span>':'<span class="bdg bg">✓ OK</span>';
+  const iw=n!==9999&&n>=0&&n<=(c.rd||ti.r);
+  const nb=c.ncb?`<span class="ncbb">🛡 ${c.ncb}yr NCB</span>`:'';
+  const hnb=(c.bncb||c.cncb)?`<span class="ncbb">🏠 Bldgs:${c.bncb||0}yr · Ctnts:${c.cncb||0}yr NCB</span>`:'';
+  const ncbShow=ti.homencb?hnb:nb;
+  let dh=`<div class="dt"><b>Expires:</b> ${fd(c.e)} · ${dt}</div>`;
+  if(ti.three){
+    if(c.ex)dh+=`<div class="dt"><b>Earliest exit:</b> ${fd(c.ex)} · ${du(c.ex)>0?du(c.ex)+'d away':'Passed'}</div>`;
+    if(c.up)dh+=`<div class="dt"><b>Upgrade eligible:</b> ${fd(c.up)} · ${du(c.up)>0?du(c.up)+'d away':'Now!'}</div>`;
+  }
+  if(c.t==='credit_card'&&c.cf&&c.pm){
+    const fy=(parseFloat(c.cf)/(parseFloat(c.pm)/12)).toFixed(2);
+    dh+=`<div class="dt"><b>Fee/year metric:</b> ${fy}%</div>`;
+  }
+  if(ti.mort&&c.bl&&c.pv){
+    const ltv=((parseFloat(c.bl)/parseFloat(c.pv))*100).toFixed(1);
+    dh+=`<div class="dt"><b>LTV:</b> ${ltv}%</div>`;
+  }
+  const hh=c.h&&c.h.length?`
+    <div style="margin-top:10px;border-top:1px solid #f0f0ee;padding-top:10px">
+      <div style="font-size:11px;color:#aaa;margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px">History</div>
+      ${c.h.slice(-3).reverse().map(x=>`<div class="hrow"><div class="hdot"></div><div class="htxt">${x.d}: ${x.n}</div></div>`).join('')}
+    </div>`:'';
+  const rb=(st==='urgent'||st==='soon')?`<button class="bs" onclick="OR('${c.id}')">🔄 Renewed</button>`:'';
+  return `<div class="cc ${st}" id="card-${c.id}">
+    <div class="r1">
+      <div class="lft">
+        <div class="ico">${ti.i}</div>
+        <div>
+          <div class="ctit">${c.lb} ${ncbShow}</div>
+          <div class="csub">${c.pr||'No provider set'}${c.co?` · £${c.co}/${c.cp}`:''}${c.pe?' · '+c.pe:''}</div>
+        </div>
+      </div>
+      <div class="rgt">
+        ${bd}
+        <div class="acts">
+          ${rb}
+          <button class="bs" onclick="FD('${c.id}')">🔍 Find deals</button>
+          <button class="bs" onclick="OE('${c.id}')">✏️ Edit</button>
+          <button class="bs rd" onclick="DC('${c.id}')">🗑</button>
+        </div>
+      </div>
+    </div>
+    <div class="dts">${dh}</div>
+    ${iw?`<div class="tip">💡 <b>Tip:</b> ${ti.tip}</div>`:''}
+    ${hh}
+    <div id="ai-${c.id}"></div>
+  </div>`;
+}
+
+function PF(t){
+  const m={
+    car_insurance:[['Name','pn'],['DOB','pd'],['Address','pa'],['Town','ptw'],['Postcode','ppc'],['Vehicle','vm'],['Reg','vr'],['Year','vy'],['Value (£)','vv'],['Annual mileage','vl'],['Kept overnight','vk'],['Named drivers','vd']],
+    home_insurance:[['Name','pn'],['DOB','pd'],['Address','pa'],['Town','ptw'],['Postcode','ppc'],['Joint policyholder','pjn'],['Property type','ht'],['Year built','hy'],['Bedrooms','hb'],['Wall construction','hw'],['Roof type','hrf'],['Rebuild value (£)','hrv'],['Contents value (£)','hcv'],['Voluntary excess (£)','hvex'],['Security','hs'],['Flooded before','hfl'],['Buildings claims (5yr)','hbc'],['Contents claims (5yr)','hcc'],['Buildings NCB (yrs)','hbncb'],['Contents NCB (yrs)','hcncb'],['Work from home','hwfh']],
+    energy_combined:[['Address','pa'],['Town','ptw'],['Postcode','ppc'],['Electricity kWh/yr','ek'],['Gas kWh/yr','gk'],['Elec unit rate (p/kWh)','eur'],['Gas unit rate (p/kWh)','gur'],['Standing charge (p/day)','esc'],['Payment method','ep'],['Meter type','em'],['Green preference','egr']],
+    energy_elec:[['Address','pa'],['Postcode','ppc'],['Electricity kWh/yr','ek'],['Elec unit rate (p/kWh)','eur'],['Payment method','ep'],['Meter type','em'],['Green preference','egr']],
+    energy_gas:[['Address','pa'],['Postcode','ppc'],['Gas kWh/yr','gk'],['Gas unit rate (p/kWh)','gur'],['Payment method','ep'],['Meter type','em']],
+    mortgage:[['Lender','ml'],['Balance (£)','mb'],['Monthly payment (£)','mpy'],['Current rate (%)','mrt'],['Property value (£)','mpv'],['Years remaining','myr']],
+    mobile:[['Your network','mn'],['Your handset','mh'],["Partner's network",'ppn'],["Partner's handset",'pph2']],
+    broadband:[['Address','pa'],['Town','ptw'],['Postcode','ppc']],
+    parking:[['Address','pa'],['Town','ptw'],['Postcode','ppc']],
+    rac:[['Name','pn'],['Postcode','ppc'],['Vehicle','vm'],['Reg','vr'],['Year','vy']],
+  };
+  const fs=m[t]||[['Name','pn'],['Address','pa'],['Postcode','ppc']];
+  return fs.map(([l,id])=>({l,v:P[id]||''})).filter(f=>f.v);
+}
+
+function FD(id){
+  const c=C.find(x=>x.id===id);if(!c)return;
+  const el=document.getElementById('ai-'+id);
+  const pf=PF(c.t);
+  const ph=pf.length
+    ?`<div class="cpan"><h4>✅ Confirm your details before searching</h4>${pf.map(f=>`<div class="cfl"><span class="cl">${f.l}</span><span>${f.v}</span></div>`).join('')}<div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"><button class="bp" onclick="RS2('${id}')">🔍 Search with these details</button><button class="bs" onclick="ST('profile')">✏️ Edit profile</button></div></div>`
+    :`<div style="margin-bottom:10px;font-size:13px;color:#888">No profile details stored yet. <button class="bs" onclick="ST('profile')">Add profile details ↗</button></div><button class="bp" onclick="RS2('${id}')">🔍 Search anyway</button>`;
+  el.innerHTML=`<div class="aib">${ph}</div>`;
+}
+
+async function RS2(id){
+  const c=C.find(x=>x.id===id);if(!c)return;
+  const ti=gt(c.t),n=du(c.e);
+  document.getElementById('ai-'+id).innerHTML=`<div class="aib"><div class="ail">✨ Searching for best current UK deals<span class="dots"></span></div></div>`;
+  const pf=PF(c.t).map(f=>f.l+': '+f.v).join(', ');
+  let ex='';
+  if(c.t==='credit_card')ex=`Current balance: £${c.bl||'?'}. Current transfer fee: ${c.cf||'?'}%. Current 0% period: ${c.pm||'?'} months. For each deal found, calculate and show the transfer fee % per year metric (fee% ÷ period in years) so deals can be compared fairly.`;
+  else if(c.t==='mortgage')ex=`Search BOTH ${P.ml||'Nationwide'} AND whole-of-market deals. Include current Bank of England base rate and analyst forecasts for rate changes through 2026-2027. Current LTV: ${c.bl&&c.pv?((parseFloat(c.bl)/parseFloat(c.pv))*100).toFixed(1)+'%':'see profile details'}.`;
+  else if(c.t==='parking')ex=`Search Sheffield City Council website specifically for: 1) parking permit renewal process, 2) whether there is a grace period after expiry during which the holder can still park legally, and 3) how long any grace period lasts.`;
+  else if(c.t==='rac')ex=`Search for current UK motor breakdown cover deals. Check whether providers offer better deals closer to renewal. Compare RAC, AA, Green Flag, Halfords and any others on Confused.com or MoneySuperMarket.`;
+  else if(c.t==='energy_combined'||c.t==='energy_elec'||c.t==='energy_gas')ex=`Current Ofgem price cap context: £1,641 Apr-Jun 2026, rising to £1,862 Jul-Sep 2026. Include Cornwall Insight or other analyst forecasts for future quarters. Based on this, recommend whether the user should fix now or wait, and for how long.`;
+  else if(c.t==='home_insurance')ex=`User has buildings NCB of ${P.hbncb||'unknown'} years and contents NCB of ${P.hcncb||'unknown'} years. Search for combined buildings and contents insurance deals. Include any current promotions or switching incentives.`;
+  const nb=c.ncb?`No-claims bonus: ${c.ncb} years. `:'';
+  const prompt=`You are a UK consumer money-saving expert helping a user in Sheffield, UK.
+
+The user has a ${c.lb} contract with ${c.pr||'their current provider'}, costing £${c.co||'unknown'}/${c.cp||'month'}, expiring in ${n===9999?'an unknown number of':n} days (${fd(c.e)}).
+
+Profile details: ${pf||'not provided'}.
+${nb}${ex}
+
+Please search the web for the best current UK deals for this contract type. Provide a practical response covering:
+1. The ideal timing to act (should they act now or wait?)
+2. The top 3 specific comparison sites or actions to take RIGHT NOW with brief explanation of each
+3. One key negotiation tip for this contract type
+4. Any notable current deals, promotions or market conditions worth knowing about
+
+Keep the response concise, practical and specific to the UK market. Use £ for all prices.`;
+
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        tools:[{type:'web_search_20250305',name:'web_search'}],
+        messages:[{role:'user',content:prompt}]
+      })
+    });
+    if(!resp.ok){const err=await resp.text();throw new Error(`API error ${resp.status}: ${err}`);}
+    const d=await resp.json();
+    if(d.error)throw new Error(d.error.message||'Unknown API error');
+    const txt=(d.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('\n').trim();
+    if(!txt)throw new Error('No response received');
+    document.getElementById('ai-'+id).innerHTML=`<div class="aib"><div class="ail">✨ Deal finder results — live web search ${new Date().toLocaleDateString('en-GB')}</div><div style="font-size:13px;line-height:1.8">${txt.replace(/\n\n/g,'</p><p style="margin-top:8px">').replace(/\n/g,'<br>')}</div></div>`;
+  }catch(e){
+    document.getElementById('ai-'+id).innerHTML=`<div class="aib" style="border-color:#e8b4b4"><div style="color:#922b21;font-weight:600;margin-bottom:6px">⚠ Search failed</div><div style="font-size:12px;color:#666">${e.message}<br><br>Note: The deal finder requires an internet connection and works best when opened via Claude.ai. If you are running this file locally (file://) the API call may be blocked by browser security. Try opening via a local server or through Claude chat.</div><button class="bs" style="margin-top:8px" onclick="RS2('${id}')">Try again</button></div>`;
+  }
+}
+
+async function FA(){
+  document.getElementById('AC').innerHTML=`<div class="acard"><div class="ail">✨ Fetching latest advice from MoneySavingExpert, Which?, Citizens Advice and Ofgem<span class="dots"></span></div></div>`;
+  const types=[...new Set(C.map(c=>gt(c.t).l))].join(', ')||'broadband, energy, insurance, mortgage, mobile, credit cards';
+  const prompt=`You are a UK consumer finance expert.
+
+Search MoneySavingExpert.com (Martin Lewis), Which?, Citizens Advice and Ofgem for the very latest advice on getting the best deals on these contract types: ${types}.
+
+Please provide a concise, practical summary covering:
+- The most important current tips for each contract type
+- Any time-sensitive advice (e.g. act now before prices change)
+- Timing tips (e.g. best days/weeks to buy car insurance, when to fix energy)
+- Current Ofgem price cap situation and energy market outlook
+- Any recent Martin Lewis alerts or recommendations relevant to these contract types
+- Anything that has changed recently that affects renewal strategy
+
+Write in flowing paragraphs without bullet point symbols. Keep it practical, concise and specific to the UK market.`;
+
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1500,
+        tools:[{type:'web_search_20250305',name:'web_search'}],
+        messages:[{role:'user',content:prompt}]
+      })
+    });
+    if(!resp.ok)throw new Error('API error '+resp.status);
+    const d=await resp.json();
+    if(d.error)throw new Error(d.error.message);
+    const txt=(d.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('\n').trim();
+    AH=`<div class="acard">
+      <div class="ail">✨ Live search — MoneySavingExpert · Which? · Citizens Advice · Ofgem</div>
+      <div style="font-size:13px;line-height:1.8">${txt.replace(/\n\n/g,'</p><p style="margin-top:8px">').replace(/\n/g,'<br>')}</div>
+      <div style="margin-top:14px;padding-top:10px;border-top:1px solid #e8e8e6;display:flex;gap:8px;flex-wrap:wrap">
+        <span style="font-size:12px;color:#888;align-self:center">If this advice suggests changes to the app:</span>
+        <a href="https://claude.ai" target="_blank" class="bs">💬 Open Claude to discuss updates ↗</a>
+      </div>
+    </div>`;
+    AD=new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+    try{localStorage.setItem('crm_a',JSON.stringify({h:AH,d:AD}));}catch(e){}
+    document.getElementById('AC').innerHTML=AH;
+    document.getElementById('AS').textContent='Last updated '+AD;
+  }catch(e){
+    document.getElementById('AC').innerHTML=`<div class="acard" style="border-color:#e8b4b4"><div style="color:#922b21;font-weight:600">⚠ Could not fetch advice</div><div style="font-size:12px;color:#666;margin-top:4px">${e.message}</div><button class="bs" style="margin-top:8px" onclick="FA()">Try again</button></div>`;
+  }
+}
+
+function ST(t){
+  document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('on',['contracts','profile','advice'][i]===t));
+  document.querySelectorAll('.pg').forEach(el=>el.classList.remove('on'));
+  document.getElementById('pg-'+t).classList.add('on');
+  if(t==='profile')FP();
+}
+
+const PIDS=['pn','pd','pa','ptw','ppc','pph','pe','pjn','pjd','vr','vm','vy','vv','vl','vk','vd','ht','hy','hb','hw','hrf','hwfh','hrv','hcv','hvex','hs','hfl','hbc','hcc','hbncb','hcncb','ek','gk','eur','gur','esc','ep','em','egr','mn','mh','ppn','pph2','ml','mb','mpy','mrt','mpv','myr'];
+function FP(){PIDS.forEach(id=>{const el=document.getElementById(id);if(el&&P[id]!==undefined&&P[id]!=='')el.value=P[id];});}
+function SP(){
+  PIDS.forEach(id=>{const el=document.getElementById(id);if(el)P[id]=el.value;});
+  try{localStorage.setItem('crm_p',JSON.stringify(P));alert('Profile saved!');}catch(e){alert('Could not save profile — storage may be unavailable.');}
+}
+
+function OA(){OM(null);}
+function OE(id){OM(C.find(c=>c.id===id));}
+
+function OM(c){
+  const isNew=!c;
+  const to=TY.map(t=>`<option value="${t.t}"${c&&c.t===t.t?' selected':''}>${t.l}</option>`).join('');
+  document.getElementById('MC').style.display='flex';
+  document.getElementById('MC').innerHTML=`<div class="modal-bg" onclick="if(event.target===this)CM()"><div class="modal">
+    <h2>${c?'✏️ Edit contract':'➕ Add contract'}</h2>
+    <div class="fl"><label>Contract type</label><select id="mt" onchange="MTC(${isNew?'true':'false'})">${to}</select></div>
+    <div class="fl"><label>Label</label><input id="mlb" type="text" value="${c?c.lb:''}" placeholder="e.g. My broadband"></div>
+    <div class="f2">
+      <div class="fl"><label>Provider</label><input id="mpr" type="text" value="${c?c.pr||'':''}" placeholder="Provider name"></div>
+      <div class="fl"><label>Person (optional)</label><input id="mpe" type="text" value="${c?c.pe||'':''}" placeholder="You / Partner"></div>
+    </div>
+    <div class="f2">
+      <div class="fl"><label>Current cost (£)</label><input id="mco" type="number" value="${c?c.co||'':''}" placeholder="0"></div>
+      <div class="fl"><label>Period</label><select id="mcp"><option value="month"${c&&c.cp==='month'?' selected':''}>per month</option><option value="year"${c&&c.cp==='year'?' selected':''}>per year</option></select></div>
+    </div>
+    <div class="f2">
+      <div class="fl"><label>Expiry date</label><input id="mex" type="date" value="${c?c.e:''}"></div>
+      <div class="fl"><label>Remind me (days before expiry)</label><input id="mrd" type="number" value="${c?c.rd||21:21}" min="1" max="180"></div>
+    </div>
+    <div id="mn_r" style="display:none" class="fl"><label>No-claims bonus (years)</label><input id="mnc" type="number" value="${c?c.ncb||'':''}" min="0" max="20" placeholder="0"></div>
+    <div id="mhn_r" style="display:none">
+      <div class="f2">
+        <div class="fl"><label>Buildings NCB (years)</label><input id="mbnc" type="number" value="${c?c.bncb||'':''}" min="0" placeholder="0"></div>
+        <div class="fl"><label>Contents NCB (years)</label><input id="mcnc" type="number" value="${c?c.cncb||'':''}" min="0" placeholder="0"></div>
+      </div>
+    </div>
+    <div id="mk_r" style="display:none">
+      <div class="f2">
+        <div class="fl"><label>Electricity usage (kWh/yr)</label><input id="mek" type="number" value="${c?c.ek||'':''}" placeholder="3200"></div>
+        <div class="fl"><label>Gas usage (kWh/yr)</label><input id="mgk" type="number" value="${c?c.gk||'':''}" placeholder="12000"></div>
+      </div>
+    </div>
+    <div id="m3_r" style="display:none">
+      <div class="f2">
+        <div class="fl"><label>Earliest exit date</label><input id="mxt" type="date" value="${c?c.ex||'':''}"></div>
+        <div class="fl"><label>Upgrade eligible date</label><input id="mup" type="date" value="${c?c.up||'':''}"></div>
+      </div>
+    </div>
+    <div id="mc_r" style="display:none">
+      <div class="f2">
+        <div class="fl"><label>Current balance (£)</label><input id="mcb" type="number" value="${c?c.bl||'':''}" placeholder="3000"></div>
+        <div class="fl"><label>Transfer fee (%)</label><input id="mcf" type="number" step="0.1" value="${c?c.cf||'':''}" placeholder="2.9"></div>
+      </div>
+      <div class="f2">
+        <div class="fl"><label>0% period (months)</label><input id="mpm" type="number" value="${c?c.pm||'':''}" placeholder="24"></div>
+        <div class="fl"><label>Min. monthly payment (£)</label><input id="mmp" type="number" value="${c?c.mp2||'':''}" placeholder="25"></div>
+      </div>
+    </div>
+    <div id="mm_r" style="display:none">
+      <div class="f2">
+        <div class="fl"><label>Outstanding balance (£)</label><input id="mmb" type="number" value="${c?c.bl||'':''}" placeholder="174678"></div>
+        <div class="fl"><label>Property value (£)</label><input id="mmpv" type="number" value="${c?c.pv||'':''}" placeholder="360000"></div>
+      </div>
+    </div>
+    <div class="fl"><label>Notes</label><input id="mnt" type="text" value="${c?c.nt||'':''}" placeholder="Any notes..."></div>
+    <div class="modal-actions">
+      <button class="bs" onclick="CM()">Cancel</button>
+      <button class="bp" onclick="SM('${c?c.id:''}')">${c?'Save changes':'Add contract'}</button>
+    </div>
+  </div></div>`;
+  MTC(isNew);
+}
+
+function MTC(isNew){
+  const t=document.getElementById('mt')?.value;if(!t)return;
+  const ti=gt(t);
+  if(isNew){const lb=document.getElementById('mlb');if(lb)lb.value=autoLabel(t);}
+  const rd=document.getElementById('mrd');if(rd)rd.value=ti.r;
+  const pr=document.getElementById('mpr');if(pr&&ti.dp&&!pr.value)pr.value=ti.dp;
+  const sh=(id,v,g)=>{const el=document.getElementById(id);if(el)el.style.display=v?(g?'grid':'block'):'none';};
+  sh('mn_r',!!ti.ncb);sh('mhn_r',!!ti.homencb);sh('mk_r',!!ti.kwh,1);sh('m3_r',!!ti.three,1);sh('mc_r',!!ti.cc);sh('mm_r',!!ti.mort,1);
+}
+
+function SM(eid){
+  const g=id=>document.getElementById(id)?.value||'';
+  const lb=g('mlb');
+  if(!lb){alert('Please fill in a label for this contract.');return;}
+  const t=g('mt'),ti=gt(t);
+  const o={id:eid||uid(),t,lb,pr:g('mpr'),pe:g('mpe'),co:parseFloat(g('mco'))||null,cp:g('mcp'),e:g('mex')||'',rd:parseInt(g('mrd'))||ti.r,nt:g('mnt'),h:[]};
+  if(ti.ncb)o.ncb=parseInt(g('mnc'))||null;
+  if(ti.homencb){o.bncb=parseInt(g('mbnc'))||null;o.cncb=parseInt(g('mcnc'))||null;}
+  if(ti.kwh){o.ek=g('mek');o.gk=g('mgk');}
+  if(ti.three){o.ex=g('mxt')||null;o.up=g('mup')||null;}
+  if(ti.cc){o.bl=parseFloat(g('mcb'))||null;o.cf=parseFloat(g('mcf'))||null;o.pm=parseInt(g('mpm'))||null;o.mp2=parseFloat(g('mmp'))||null;}
+  if(ti.mort){o.bl=parseFloat(g('mmb'))||null;o.pv=parseFloat(g('mmpv'))||null;}
+  if(eid){const ex=C.find(c=>c.id===eid);o.h=ex?ex.h||[]:[];C=C.map(c=>c.id===eid?o:c);}
+  else C.push(o);
+  CM();save();RA();
+}
+
+function OR(id){
+  const c=C.find(x=>x.id===id);if(!c)return;
+  const ti=gt(c.t);
+  document.getElementById('MC').style.display='flex';
+  document.getElementById('MC').innerHTML=`<div class="modal-bg" onclick="if(event.target===this)CM()"><div class="modal">
+    <h2>🔄 Mark as renewed</h2>
+    <p style="font-size:13px;color:#888;margin-bottom:1rem">Enter your new deal details. The previous contract will be saved to history.</p>
+    <div class="fl"><label>New provider</label><input id="rp" type="text" value="${c.pr||''}"></div>
+    <div class="f2">
+      <div class="fl"><label>New cost (£)</label><input id="rc" type="number" value="${c.co||''}"></div>
+      <div class="fl"><label>Period</label><select id="rcp"><option value="month"${c.cp==='month'?' selected':''}>per month</option><option value="year"${c.cp==='year'?' selected':''}>per year</option></select></div>
+    </div>
+    <div class="fl"><label>New expiry date</label><input id="re" type="date"></div>
+    ${ti.ncb?`<div class="fl"><label>No-claims bonus (auto-incremented to ${(c.ncb||0)+1} years)</label><input id="rnc" type="number" value="${(c.ncb||0)+1}" min="0" max="20"></div>`:''}
+    ${ti.homencb?`<div class="f2"><div class="fl"><label>Buildings NCB (auto to ${(c.bncb||0)+1} yrs)</label><input id="rbnc" type="number" value="${(c.bncb||0)+1}" min="0"></div><div class="fl"><label>Contents NCB (auto to ${(c.cncb||0)+1} yrs)</label><input id="rcnc" type="number" value="${(c.cncb||0)+1}" min="0"></div></div>`:''}
+    <div class="fl"><label>Notes (optional)</label><input id="rnt" type="text" placeholder="e.g. Switched to Churchill, saved £120/yr"></div>
+    <div class="modal-actions">
+      <button class="bs" onclick="CM()">Cancel</button>
+      <button class="bp" onclick="SR('${id}')">✓ Save renewal</button>
+    </div>
+  </div></div>`;
+}
+
+function SR(id){
+  const g=id=>document.getElementById(id)?.value||'';
+  const ne=g('re');if(!ne){alert('Please enter the new expiry date.');return;}
+  const c=C.find(x=>x.id===id);if(!c)return;
+  const ti=gt(c.t);
+  const h={d:new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}),n:`Renewed with ${g('rp')||c.pr||'same provider'} at £${g('rc')||c.co||'?'}/${g('rcp')||c.cp}. Previous expiry: ${fd(c.e)}.${g('rnt')?' '+g('rnt'):''}`};
+  c.h=c.h||[];c.h.push(h);
+  if(g('rp'))c.pr=g('rp');
+  if(g('rc'))c.co=parseFloat(g('rc'));
+  c.cp=g('rcp')||c.cp;
+  c.e=ne;
+  if(ti.ncb)c.ncb=parseInt(g('rnc'))||c.ncb;
+  if(ti.homencb){c.bncb=parseInt(g('rbnc'))||c.bncb;c.cncb=parseInt(g('rcnc'))||c.cncb;}
+  CM();save();RA();
+}
+
+function DC(id){if(!confirm('Delete this contract? This cannot be undone.'))return;C=C.filter(c=>c.id!==id);save();RA();}
+function CM(){document.getElementById('MC').style.display='none';document.getElementById('MC').innerHTML='';}
+
+function XC(){
+  if(!C.length){alert('No contracts to export.');return;}
+  const lines=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Contract Renewal Manager//EN','CALSCALE:GREGORIAN','METHOD:PUBLISH'];
+  const AV=(dt,rem,sum,desc)=>{
+    if(!dt)return;
+    const d=new Date(dt+'T00:00:00');d.setDate(d.getDate()-rem);
+    const fm=x=>x.toISOString().replace(/[-:]/g,'').split('.')[0]+'Z';
+    const uid2=Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+    lines.push('BEGIN:VEVENT',`DTSTART;VALUE=DATE:${d.toISOString().slice(0,10).replace(/-/g,'')}`,`SUMMARY:${sum}`,`DESCRIPTION:${(desc||'').replace(/[;\n]/g,' ').slice(0,200)}`,`UID:${uid2}@contractmanager`,'END:VEVENT');
+  };
+  C.forEach(c=>{
+    const ti=gt(c.t),rd=c.rd||ti.r;
+    if(c.e)AV(c.e,rd,`Renew: ${c.lb}`,`${c.lb} with ${c.pr||'?'} expires ${fd(c.e)}. ${ti.tip}`);
+    if(c.ex)AV(c.ex,7,`Early exit window: ${c.lb}`,`Earliest exit date for ${c.lb}: ${fd(c.ex)}`);
+    if(c.up)AV(c.up,1,`Upgrade eligible: ${c.lb}`,`Upgrade eligibility date for ${c.lb}: ${fd(c.up)}`);
+  });
+  lines.push('END:VCALENDAR');
+  const b=new Blob([lines.join('\r\n')],{type:'text/calendar;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='contract-reminders.ics';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  setTimeout(()=>alert('Calendar file downloaded!\n\nTo use it:\n• Google Calendar: Settings → Import & Export → Import\n• Apple Calendar: File → Import\n• Outlook: File → Open & Export → Import/Export\n\nThis will add reminders to your calendar so your phone notifies you automatically.'),200);
+}
+
+function WZ(){
+  document.getElementById('CL').innerHTML=`<div class="modal" style="border:1px solid #e8e8e6;margin-top:0">
+    <h2>👋 Welcome — let's set up your contracts</h2>
+    <p style="font-size:13px;color:#888;margin-bottom:1.25rem">Tick the contracts you currently have. You can fill in expiry dates and costs afterwards by clicking the ✏️ Edit button on each card.</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1.25rem">
+      ${TY.filter(x=>x.t!=='other').map(x=>`
+        <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;padding:8px 10px;border:1px solid #e8e8e6;border-radius:10px;background:#fafaf9">
+          <input type="checkbox" id="wz_${x.t}" style="width:16px;height:16px;margin:0;cursor:pointer">
+          <span>${x.i} ${x.l}</span>
+        </label>`).join('')}
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button class="bs" onclick="RA()">Skip — I'll add manually</button>
+      <button class="bp" onclick="WF()">✓ Add selected contracts</button>
+    </div>
+  </div>`;
+}
+
+function WF(){
+  const sel=TY.filter(x=>{const el=document.getElementById('wz_'+x.t);return el&&el.checked;});
+  if(!sel.length){alert('Please tick at least one contract first.');return;}
+  sel.forEach(x=>C.push({id:uid(),t:x.t,lb:autoLabel(x.t),pr:x.dp||'',pe:'',co:null,cp:'month',e:'',rd:x.r,nt:'',h:[]}));
+  save();RA();
+  setTimeout(()=>alert(`✓ ${sel.length} contract${sel.length>1?'s':''} added!\n\nNext steps:\n1. Click ✏️ Edit on each card to add expiry dates and costs\n2. Go to the Profile tab to store your personal details for deal searching\n3. Use 📅 Export reminders to add alerts to your phone calendar`),200);
+}
+
+init();
+</script>
+</body>
+</html>
