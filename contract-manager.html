@@ -28,6 +28,7 @@ h1{font-size:20px;font-weight:600;margin-bottom:4px}
 .bs{display:inline-flex;align-items:center;gap:5px;background:#fff;color:#1a1a1a;border:1px solid #ddd;padding:7px 12px;border-radius:8px;font-size:12px;cursor:pointer;font-family:inherit}
 .bs:hover{background:#f5f5f3}
 .bs.rd{color:#c0392b;border-color:#e8b4b4}
+.bs.grn{color:#1e8449;border-color:#a9dfbf}
 .cl{display:flex;flex-direction:column;gap:10px}
 .cc{background:#fff;border:1px solid #e8e8e6;border-radius:12px;padding:14px 16px}
 .cc.urgent{border-left:4px solid #c0392b;border-radius:0 12px 12px 0}
@@ -57,10 +58,15 @@ h1{font-size:20px;font-weight:600;margin-bottom:4px}
 .psec h3{font-size:14px;font-weight:600;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid #f0f0ee}
 .fl{margin-bottom:1rem}
 .fl label{display:block;font-size:12px;color:#666;margin-bottom:4px;font-weight:500}
+.fl label .qi{font-size:10px;background:#fff3cd;color:#856404;padding:1px 5px;border-radius:4px;margin-left:4px;font-weight:600}
 .fl input,.fl select,.fl textarea{width:100%;padding:7px 10px;border:1px solid #ddd;border-radius:8px;font-size:13px;font-family:inherit}
 .fl input:focus,.fl select:focus{outline:none;border-color:#1a1a1a}
 .f2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .f3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.cb-group{display:flex;flex-direction:column;gap:6px;margin-top:4px}
+.cb-item{display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer}
+.cb-item input[type=checkbox]{width:15px;height:15px;cursor:pointer;flex-shrink:0}
+.cb-sub{margin-left:23px;margin-top:4px;margin-bottom:4px}
 .acard{background:#fff;border:1px solid #e8e8e6;border-radius:12px;padding:14px 16px;margin-bottom:10px}
 .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:flex-start;justify-content:center;z-index:100;padding:2rem 1rem;overflow-y:auto}
 .modal{background:#fff;border-radius:14px;padding:1.5rem;width:100%;max-width:520px;box-shadow:0 20px 60px rgba(0,0,0,0.2)}
@@ -75,11 +81,10 @@ h1{font-size:20px;font-weight:600;margin-bottom:4px}
 .sbadge{font-size:11px;padding:5px 12px;border-radius:8px;margin-bottom:1rem;display:inline-block;font-weight:500}
 .sbadge.ok{background:#eafaf1;color:#1e8449}
 .sbadge.warn{background:#fef9e7;color:#7d6608}
-.dots::after{content:'.';animation:dt 1s steps(3,end) infinite}
-@keyframes dt{0%,33%{content:'.'}34%,66%{content:'..'}67%{content:'...'}}
-.section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
-.section-header h2{font-size:16px;font-weight:600}
-.section-header p{font-size:12px;color:#888;margin-top:2px}
+.claude-btn{display:inline-flex;align-items:center;gap:6px;background:#7c3aed;color:#fff;border:none;padding:9px 16px;border-radius:8px;font-size:13px;cursor:pointer;font-family:inherit;font-weight:500;text-decoration:none}
+.claude-btn:hover{background:#6d28d9}
+.info-box{margin-top:10px;padding:12px 14px;background:#f0f4ff;border-radius:10px;border:1px solid #c7d7ff;font-size:13px;color:#1e3a8a;line-height:1.6}
+.qi-legend{font-size:11px;color:#856404;background:#fff3cd;padding:6px 10px;border-radius:6px;margin-bottom:12px;display:inline-block}
 @media(max-width:600px){.f2,.f3{grid-template-columns:1fr}.acts{flex-direction:column}.bar{flex-direction:column;align-items:stretch}}
 </style>
 </head>
@@ -114,66 +119,121 @@ h1{font-size:20px;font-weight:600;margin-bottom:4px}
 
   <!-- PROFILE TAB -->
   <div id="pg-profile" class="pg">
-    <div class="section-header">
-      <div><h2>👤 Your profile</h2><p>Stored details used when searching for deals</p></div>
-      <button class="bp" onclick="SP()">💾 Save profile</button>
+    <div class="section-header" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+      <div><h2 style="font-size:16px;font-weight:600">👤 Your profile</h2><p style="font-size:12px;color:#888;margin-top:2px">Stored details used when searching for deals</p></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="bs grn" onclick="exportData()">⬇️ Export data</button>
+        <label class="bs grn" style="cursor:pointer">⬆️ Import data<input type="file" accept=".json" onchange="importData(event)" style="display:none"></label>
+        <button class="bp" onclick="SP()">💾 Save profile</button>
+      </div>
     </div>
 
+    <div class="qi-legend">⚡ = Has a direct impact on your quote price</div>
+
     <div class="psec"><h3>👤 Personal details</h3>
-      <div class="f2"><div class="fl"><label>Full name</label><input id="pn" type="text" placeholder="John Smith"></div><div class="fl"><label>Date of birth</label><input id="pd" type="date"></div></div>
+      <div class="f2"><div class="fl"><label>Full name</label><input id="pn" type="text" placeholder="John Smith"></div><div class="fl"><label>Date of birth <span class="qi">⚡</span></label><input id="pd" type="date"></div></div>
       <div class="fl"><label>Address (house number & street)</label><input id="pa" type="text" placeholder="123 Main Street"></div>
-      <div class="f2"><div class="fl"><label>Town / City</label><input id="ptw" type="text" placeholder="Sheffield"></div><div class="fl"><label>Postcode</label><input id="ppc" type="text" placeholder="S1 1AA"></div></div>
+      <div class="f2"><div class="fl"><label>Town / City</label><input id="ptw" type="text" placeholder="Sheffield"></div><div class="fl"><label>Postcode <span class="qi">⚡</span></label><input id="ppc" type="text" placeholder="S1 1AA"></div></div>
       <div class="f2"><div class="fl"><label>Phone</label><input id="pph" type="tel" placeholder="07700 000000"></div><div class="fl"><label>Email</label><input id="pe" type="email" placeholder="you@example.com"></div></div>
-      <div class="f2"><div class="fl"><label>Joint policyholder name</label><input id="pjn" type="text" placeholder="Partner's name"></div><div class="fl"><label>Joint policyholder DOB</label><input id="pjd" type="date"></div></div>
+      <div class="f2"><div class="fl"><label>Joint policyholder name</label><input id="pjn" type="text" placeholder="Partner's name"></div><div class="fl"><label>Joint policyholder DOB <span class="qi">⚡</span></label><input id="pjd" type="date"></div></div>
     </div>
 
     <div class="psec"><h3>🚗 Vehicle details</h3>
-      <div class="f2"><div class="fl"><label>Registration</label><input id="vr" type="text" placeholder="AB12 CDE"></div><div class="fl"><label>Make & model</label><input id="vm" type="text" placeholder="Ford Focus"></div></div>
-      <div class="f3"><div class="fl"><label>Year</label><input id="vy" type="number" placeholder="2019"></div><div class="fl"><label>Est. value (£)</label><input id="vv" type="number" placeholder="8000"></div><div class="fl"><label>Annual mileage</label><input id="vl" type="number" placeholder="8000"></div></div>
-      <div class="f2"><div class="fl"><label>Kept overnight</label><select id="vk"><option>Driveway</option><option>Garage</option><option>Street</option><option>Car park</option></select></div><div class="fl"><label>Named drivers</label><input id="vd" type="text" placeholder="Jane Smith (age 35)"></div></div>
+      <div class="f2"><div class="fl"><label>Registration <span class="qi">⚡</span></label><input id="vr" type="text" placeholder="AB12 CDE"></div><div class="fl"><label>Make & model <span class="qi">⚡</span></label><input id="vm" type="text" placeholder="Ford Focus"></div></div>
+      <div class="f3"><div class="fl"><label>Year <span class="qi">⚡</span></label><input id="vy" type="number" placeholder="2019"></div><div class="fl"><label>Est. value (£) <span class="qi">⚡</span></label><input id="vv" type="number" placeholder="8000"></div><div class="fl"><label>Annual mileage <span class="qi">⚡</span></label><input id="vl" type="number" placeholder="8000"></div></div>
+      <div class="f2"><div class="fl"><label>Kept overnight <span class="qi">⚡</span></label><select id="vk"><option>Driveway</option><option>Garage</option><option>Street</option><option>Car park</option></select></div><div class="fl"><label>Named drivers <span class="qi">⚡</span></label><input id="vd" type="text" placeholder="Jane Smith (age 35)"></div></div>
     </div>
 
     <div class="psec"><h3>🏠 Property details</h3>
-      <div class="f3"><div class="fl"><label>Property type</label><select id="ht"><option>Detached</option><option>Semi-detached</option><option>Terraced</option><option>Flat/apartment</option><option>Bungalow</option></select></div><div class="fl"><label>Year built</label><input id="hy" type="number" placeholder="1985"></div><div class="fl"><label>Bedrooms</label><input id="hb" type="number" placeholder="3"></div></div>
-      <div class="f3"><div class="fl"><label>Wall construction</label><select id="hw"><option>Standard brick</option><option>Stone</option><option>Timber frame</option><option>Concrete</option><option>Other</option></select></div><div class="fl"><label>Roof type</label><select id="hrf"><option>Pitched (tiles/slate)</option><option>Flat roof</option><option>Mixed</option></select></div><div class="fl"><label>Work from home?</label><select id="hwfh"><option>No</option><option>Yes — occasionally</option><option>Yes — full time</option></select></div></div>
-      <div class="f3"><div class="fl"><label>Rebuild value (£)</label><input id="hrv" type="number" placeholder="200000"></div><div class="fl"><label>Contents value (£)</label><input id="hcv" type="number" placeholder="40000"></div><div class="fl"><label>Voluntary excess (£)</label><input id="hvex" type="number" placeholder="0"></div></div>
-      <div class="f2"><div class="fl"><label>Security features</label><input id="hs" type="text" placeholder="Alarm, deadbolts, CCTV..."></div><div class="fl"><label>Ever flooded?</label><select id="hfl"><option>No</option><option>Yes — once</option><option>Yes — more than once</option></select></div></div>
-      <div class="f2"><div class="fl"><label>Buildings claims (last 5 years)</label><input id="hbc" type="number" placeholder="0" min="0"></div><div class="fl"><label>Contents claims (last 5 years)</label><input id="hcc" type="number" placeholder="0" min="0"></div></div>
-      <div class="f2"><div class="fl"><label>Buildings NCB (years)</label><input id="hbncb" type="number" placeholder="0" min="0"></div><div class="fl"><label>Contents NCB (years)</label><input id="hcncb" type="number" placeholder="0" min="0"></div></div>
+      <div class="f3"><div class="fl"><label>Property type <span class="qi">⚡</span></label><select id="ht"><option>Detached</option><option>Semi-detached</option><option>Terraced</option><option>Flat/apartment</option><option>Bungalow</option></select></div><div class="fl"><label>Year built <span class="qi">⚡</span></label><input id="hy" type="number" placeholder="1985"></div><div class="fl"><label>Bedrooms</label><input id="hb" type="number" placeholder="3"></div></div>
+      <div class="f3"><div class="fl"><label>Wall construction <span class="qi">⚡</span></label><select id="hw"><option>Standard brick</option><option>Stone</option><option>Timber frame</option><option>Concrete</option><option>Other</option></select></div><div class="fl"><label>Roof type <span class="qi">⚡</span></label><select id="hrf"><option>Pitched (tiles/slate)</option><option>Flat roof</option><option>Mixed</option></select></div><div class="fl"><label>Work from home? <span class="qi">⚡</span></label><select id="hwfh"><option>No</option><option>Yes — occasionally</option><option>Yes — full time</option></select></div></div>
+      <div class="f3"><div class="fl"><label>Rebuild value (£) <span class="qi">⚡</span></label><input id="hrv" type="number" placeholder="200000"></div><div class="fl"><label>Contents value (£) <span class="qi">⚡</span></label><input id="hcv" type="number" placeholder="40000"></div><div class="fl"><label>Voluntary excess (£) <span class="qi">⚡</span></label><input id="hvex" type="number" placeholder="0"></div></div>
+      <div class="f2"><div class="fl"><label>Ever flooded? <span class="qi">⚡</span></label><select id="hfl"><option>No</option><option>Yes — once</option><option>Yes — more than once</option></select></div><div class="fl"><label>Work from home business equipment?</label><select id="hwfhe"><option>No</option><option>Yes — minimal (laptop/phone)</option><option>Yes — significant equipment</option></select></div></div>
+      <div class="f2"><div class="fl"><label>Buildings claims (last 5 years) <span class="qi">⚡</span></label><input id="hbc" type="number" placeholder="0" min="0"></div><div class="fl"><label>Contents claims (last 5 years) <span class="qi">⚡</span></label><input id="hcc" type="number" placeholder="0" min="0"></div></div>
+      <div class="f2"><div class="fl"><label>Buildings NCB (years) <span class="qi">⚡</span></label><input id="hbncb" type="number" placeholder="0" min="0"></div><div class="fl"><label>Contents NCB (years) <span class="qi">⚡</span></label><input id="hcncb" type="number" placeholder="0" min="0"></div></div>
+
+      <div class="fl"><label>Main door lock type <span class="qi">⚡</span></label>
+        <select id="hdl"><option value="">Select lock type</option><option>5-lever mortice deadlock (BS3621)</option><option>2-lever mortice lock</option><option>Euro cylinder lock</option><option>Multi-point locking system (uPVC)</option><option>Rim lock / Yale-type</option><option>Smart lock</option></select>
+      </div>
+      <div class="fl"><label>Additional external doors</label>
+        <div class="cb-group">
+          <label class="cb-item"><input type="checkbox" id="hpatio"> Patio doors (sliding)</label>
+          <div class="cb-sub" id="hpatio_sub" style="display:none">
+            <div class="fl" style="margin-bottom:0"><label style="font-size:11px">Patio door lock type <span class="qi">⚡</span></label><select id="hpatiol"><option value="">Select</option><option>Multi-point locking system</option><option>Key-operated lock</option><option>Security bar/rod</option><option>No lock</option></select></div>
+          </div>
+          <label class="cb-item"><input type="checkbox" id="hbifold"> Bifold doors</label>
+          <div class="cb-sub" id="hbifold_sub" style="display:none">
+            <div class="fl" style="margin-bottom:0"><label style="font-size:11px">Bifold door lock type <span class="qi">⚡</span></label><select id="hbifoldl"><option value="">Select</option><option>Multi-point locking system</option><option>Key-operated lock</option><option>Shootbolt locks</option><option>No lock</option></select></div>
+          </div>
+          <label class="cb-item"><input type="checkbox" id="hfrench"> French doors</label>
+          <div class="cb-sub" id="hfrench_sub" style="display:none">
+            <div class="fl" style="margin-bottom:0"><label style="font-size:11px">French door lock type <span class="qi">⚡</span></label><select id="hfrenchl"><option value="">Select</option><option>Multi-point locking system</option><option>Key-operated deadlock</option><option>Espagnolette bolt</option><option>No lock</option></select></div>
+          </div>
+        </div>
+      </div>
+      <div class="fl"><label>Alarm systems <span class="qi">⚡</span></label>
+        <div class="cb-group">
+          <label class="cb-item"><input type="checkbox" id="hal_burg_self"> Burglar alarm (self-monitored)</label>
+          <label class="cb-item"><input type="checkbox" id="hal_burg_pro"> Burglar alarm (professionally monitored) <span class="qi" style="margin-left:4px">⚡</span></label>
+          <label class="cb-item"><input type="checkbox" id="hal_smart"> Smart alarm system</label>
+          <label class="cb-item"><input type="checkbox" id="hal_smoke"> Smoke detectors</label>
+          <label class="cb-item"><input type="checkbox" id="hal_co"> Carbon monoxide detectors</label>
+        </div>
+      </div>
+      <div class="fl"><label>Other security features</label>
+        <div class="cb-group">
+          <label class="cb-item"><input type="checkbox" id="hsec_wl"> Window locks (key-operated) <span class="qi" style="margin-left:4px">⚡</span></label>
+          <label class="cb-item"><input type="checkbox" id="hsec_cctv"> CCTV</label>
+          <label class="cb-item"><input type="checkbox" id="hsec_light"> Security lighting</label>
+          <label class="cb-item"><input type="checkbox" id="hsec_nw"> Neighbourhood Watch member</label>
+        </div>
+      </div>
     </div>
 
     <div class="psec"><h3>⚡ Energy details</h3>
-      <div class="f2"><div class="fl"><label>Annual electricity usage (kWh)</label><input id="ek" type="number" placeholder="3200"></div><div class="fl"><label>Annual gas usage (kWh)</label><input id="gk" type="number" placeholder="12000"></div></div>
+      <div class="f2"><div class="fl"><label>Annual electricity usage (kWh) <span class="qi">⚡</span></label><input id="ek" type="number" placeholder="3200"></div><div class="fl"><label>Annual gas usage (kWh) <span class="qi">⚡</span></label><input id="gk" type="number" placeholder="12000"></div></div>
       <div class="f3"><div class="fl"><label>Current elec unit rate (p/kWh)</label><input id="eur" type="number" step="0.01" placeholder="e.g. 24.5"></div><div class="fl"><label>Current gas unit rate (p/kWh)</label><input id="gur" type="number" step="0.01" placeholder="e.g. 5.8"></div><div class="fl"><label>Standing charge (p/day)</label><input id="esc" type="number" step="0.01" placeholder="e.g. 53.4"></div></div>
-      <div class="f3"><div class="fl"><label>Payment method</label><select id="ep"><option>Direct debit (monthly)</option><option>Direct debit (quarterly)</option><option>Prepayment meter</option><option>On receipt of bill</option></select></div><div class="fl"><label>Meter type</label><select id="em"><option>Smart meter</option><option>Standard meter</option></select></div><div class="fl"><label>Green energy preference</label><select id="egr"><option>No preference</option><option>Prefer green tariffs</option><option>Green only</option></select></div></div>
+      <div class="f3"><div class="fl"><label>Payment method <span class="qi">⚡</span></label><select id="ep"><option>Direct debit (monthly)</option><option>Direct debit (quarterly)</option><option>Prepayment meter</option><option>On receipt of bill</option></select></div><div class="fl"><label>Meter type <span class="qi">⚡</span></label><select id="em"><option>Smart meter</option><option>Standard meter</option></select></div><div class="fl"><label>Tariff preference</label><select id="egr"><option>No preference</option><option>Prefer fixed tariff</option><option>Prefer variable tariff</option><option>Prefer green tariffs</option><option>Green only</option></select></div></div>
     </div>
 
     <div class="psec"><h3>📱 Mobile details</h3>
       <div class="f2"><div class="fl"><label>Your network</label><input id="mn" type="text" placeholder="EE, O2, Vodafone..."></div><div class="fl"><label>Your handset</label><input id="mh" type="text" placeholder="iPhone 13"></div></div>
-      <div class="f2"><div class="fl"><label>Partner's network</label><input id="ppn" type="text" placeholder="Three, Sky..."></div><div class="fl"><label>Partner's handset</label><input id="pph2" type="text" placeholder="iPhone 12 (damaged screen)"></div></div>
+      <div class="f2"><div class="fl"><label>Your contract preference</label><select id="mcp2"><option>No preference</option><option>SIM only</option><option>Handset + contract</option></select></div><div class="fl"><label>Your monthly budget (£)</label><input id="mmb2" type="number" placeholder="30"></div></div>
+      <div class="f2"><div class="fl"><label>Partner's network</label><input id="ppn" type="text" placeholder="Three, Sky..."></div><div class="fl"><label>Partner's handset</label><input id="pph2" type="text" placeholder="iPhone 12"></div></div>
+      <div class="f2"><div class="fl"><label>Partner's contract preference</label><select id="mpcp"><option>No preference</option><option>SIM only</option><option>Handset + contract</option></select></div><div class="fl"><label>Partner's monthly budget (£)</label><input id="mpmb" type="number" placeholder="30"></div></div>
+    </div>
+
+    <div class="psec"><h3>📡 Broadband details</h3>
+      <div class="f2"><div class="fl"><label>Current provider</label><input id="bpr" type="text" placeholder="BT, Virgin, Sky..."></div><div class="fl"><label>Current speed (Mbps)</label><input id="bsp" type="number" placeholder="67"></div></div>
+      <div class="f2"><div class="fl"><label>Minimum acceptable speed (Mbps) <span class="qi">⚡</span></label><input id="bmsp" type="number" placeholder="30"></div><div class="fl"><label>Bundle preference</label><select id="bbun"><option>Broadband only</option><option>Broadband + phone</option><option>Broadband + TV</option><option>Full bundle (broadband + phone + TV)</option><option>No preference</option></select></div></div>
     </div>
 
     <div class="psec"><h3>🏦 Mortgage details</h3>
-      <div class="f2"><div class="fl"><label>Lender</label><input id="ml" type="text" placeholder="Nationwide"></div><div class="fl"><label>Outstanding balance (£)</label><input id="mb" type="number" placeholder="174678"></div></div>
-      <div class="f3"><div class="fl"><label>Monthly payment (£)</label><input id="mpy" type="number" placeholder="833"></div><div class="fl"><label>Current rate (%)</label><input id="mrt" type="number" step="0.01" placeholder="0.94"></div><div class="fl"><label>Property value (£)</label><input id="mpv" type="number" placeholder="360000"></div></div>
+      <div class="f2"><div class="fl"><label>Lender</label><input id="ml" type="text" placeholder="Nationwide"></div><div class="fl"><label>Outstanding balance (£) <span class="qi">⚡</span></label><input id="mb" type="number" placeholder="174678"></div></div>
+      <div class="f3"><div class="fl"><label>Monthly payment (£)</label><input id="mpy" type="number" placeholder="833"></div><div class="fl"><label>Current rate (%) <span class="qi">⚡</span></label><input id="mrt" type="number" step="0.01" placeholder="0.94"></div><div class="fl"><label>Property value (£) <span class="qi">⚡</span></label><input id="mpv" type="number" placeholder="360000"></div></div>
       <div class="fl"><label>Years remaining</label><input id="myr" type="number" placeholder="19"></div>
     </div>
 
-    <div style="display:flex;justify-content:flex-end;margin-top:.5rem">
+    <div style="display:flex;justify-content:flex-end;margin-top:.5rem;gap:8px;flex-wrap:wrap">
+      <button class="bs grn" onclick="exportData()">⬇️ Export data</button>
+      <label class="bs grn" style="cursor:pointer">⬆️ Import data<input type="file" accept=".json" onchange="importData(event)" style="display:none"></label>
       <button class="bp" onclick="SP()">💾 Save profile</button>
     </div>
   </div>
 
   <!-- ADVICE TAB -->
   <div id="pg-advice" class="pg">
-    <div class="section-header">
-      <div><h2>💡 Latest advice</h2><p id="AS">Not yet fetched</p></div>
-      <button class="bp" onclick="FA()">🔄 Refresh advice</button>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:10px">
+      <div><h2 style="font-size:16px;font-weight:600">💡 Latest advice</h2><p id="AS" style="font-size:12px;color:#888;margin-top:2px">Not yet fetched</p></div>
+      <button class="claude-btn" onclick="FA()">🔍 Get advice in Claude</button>
+    </div>
+    <div class="info-box" style="margin-bottom:1rem">
+      <b>How this works:</b> Clicking "Get advice in Claude" opens Claude.ai in a new tab with a pre-built prompt. Claude will search MoneySavingExpert, Which?, Citizens Advice and Ofgem for the latest UK advice tailored to your contracts. Just press Send when the tab opens.
     </div>
     <div id="AC">
       <div class="emp">
         <p style="font-size:32px;margin-bottom:12px">💡</p>
-        <p style="margin-bottom:6px;font-size:15px">Hit "Refresh advice" to get the latest UK consumer tips</p>
+        <p style="margin-bottom:6px;font-size:15px">Click "Get advice in Claude" above to get the latest UK consumer tips</p>
         <p style="font-size:12px">Sources: MoneySavingExpert (Martin Lewis) · Which? · Citizens Advice · Ofgem</p>
       </div>
     </div>
@@ -187,18 +247,18 @@ h1{font-size:20px;font-weight:600;margin-bottom:4px}
 const TY=[
   {t:'car_insurance',l:'Car insurance',i:'🚗',r:27,tip:'Get quotes 25–30 days before expiry — statistically the cheapest window. Never auto-renew. Compare on Compare the Market, GoCompare, MoneySuperMarket and Confused.',ncb:1},
   {t:'home_insurance',l:'Home insurance',i:'🏠',r:28,tip:'Shop 3–4 weeks before renewal. Bundle buildings and contents for discounts. Loyalty penalty is real — new customers consistently pay less.',homencb:1},
-  {t:'energy_combined',l:'Gas & Electric (combined)',i:'⚡',r:42,tip:'Use Ofgem-accredited comparison sites. Fix before your term ends to avoid the standard variable tariff. Check Cornwall Insight forecasts before deciding whether to fix or wait.',kwh:1},
-  {t:'energy_elec',l:'Electricity only',i:'💡',r:42,tip:'Compare electricity-only tariffs on Uswitch or MoneySuperMarket. Check the current Ofgem price cap and whether fixing now makes sense.',kwh:1},
+  {t:'energy_combined',l:'Gas & Electric (combined)',i:'⚡',r:42,tip:'Use Ofgem-accredited comparison sites. Fix before your term ends to avoid the standard variable tariff.',kwh:1},
+  {t:'energy_elec',l:'Electricity only',i:'💡',r:42,tip:'Compare electricity-only tariffs on Uswitch or MoneySuperMarket.',kwh:1},
   {t:'energy_gas',l:'Gas only',i:'🔥',r:42,tip:'Compare gas-only tariffs on Uswitch or MoneySuperMarket.',kwh:1},
   {t:'broadband',l:'Broadband / Phone',i:'📡',r:30,tip:'Compare on Uswitch or MoneySuperMarket. Negotiate with your existing provider first — retention teams often beat advertised prices.',three:1},
-  {t:'tv',l:'TV / Streaming',i:'📺',r:14,tip:'Call to cancel and wait for a win-back offer. Bundle deals with broadband can save significantly.'},
+  {t:'tv',l:'TV / Streaming',i:'📺',r:14,tip:'Call to cancel and wait for a win-back offer. Bundle deals with broadband can save significantly.',three:1},
   {t:'mobile',l:'Mobile phone',i:'📱',r:7,tip:"Check your network's upgrade and exit policy. SIM-only deals on Uswitch are often far cheaper than staying on a handset contract.",three:1,pers:1},
-  {t:'mortgage',l:'Mortgage',i:'🏦',r:120,tip:'Start looking 3–6 months before your fixed term ends. Lower LTV means better rates. Compare both your existing lender and whole-of-market deals.',mort:1},
-  {t:'mot',l:'Car MOT',i:'🔧',r:21,tip:'MOT can be done up to a month early without losing your anniversary date. Book mid-week for cheaper rates. Halfords and Kwik Fit often have deals.'},
+  {t:'mortgage',l:'Mortgage',i:'🏦',r:120,tip:'Start looking 3–6 months before your fixed term ends. Lower LTV means better rates.',mort:1},
+  {t:'mot',l:'Car MOT',i:'🔧',r:21,tip:'MOT can be done up to a month early without losing your anniversary date. Book mid-week for cheaper rates.'},
   {t:'car_tax',l:'Car tax',i:'📋',r:21,tip:'Renew at gov.uk/renew-vehicle-tax. DVLA sends postal reminders but set a digital reminder too.'},
   {t:'norton',l:'Cyber security (Norton)',i:'🛡️',r:14,tip:'Check norton.com/deals before renewing — deals are almost always better than the auto-renewal price.',dp:'Norton'},
-  {t:'parking',l:'Parking permit',i:'🅿️',r:14,tip:'Renew via your local council website. App will search for any grace period policy when your reminder triggers.'},
-  {t:'rac',l:'Motor breakdown cover',i:'🚨',r:21,tip:'Breakdown cover providers often offer better deals as expiry approaches. Compare RAC, AA, Green Flag and Halfords on Confused.com or MoneySuperMarket.'},
+  {t:'parking',l:'Parking permit',i:'🅿️',r:14,tip:'Renew via your local council website.'},
+  {t:'rac',l:'Motor breakdown cover',i:'🚨',r:21,tip:'Compare RAC, AA, Green Flag and Halfords on Confused.com or MoneySuperMarket.'},
   {t:'credit_card',l:'Credit card (0% balance transfer)',i:'💳',r:42,tip:'Compare using transfer fee % per year = fee% ÷ period in years. Aim for the lowest fee combined with the longest 0% term.',cc:1},
   {t:'other',l:'Other / Custom',i:'📄',r:21,tip:'Shop around using comparison sites before your renewal date.'},
 ];
@@ -208,12 +268,24 @@ let C=[],P={},AH=null,AD=null;
 function save(){try{localStorage.setItem('crm_c',JSON.stringify(C));localStorage.setItem('crm_p',JSON.stringify(P));showBadge(true);}catch(e){showBadge(false);}}
 function showBadge(ok){const el=document.getElementById('storemsg');if(el)el.innerHTML=ok?'<span class="sbadge ok">✓ Data saving automatically</span>':'<span class="sbadge warn">⚠ Storage unavailable — data will not persist between sessions</span>';}
 
+// Checkbox helpers for door sub-panels
+function initDoorCheckboxes(){
+  ['patio','bifold','french'].forEach(d=>{
+    const cb=document.getElementById('h'+d);
+    if(cb)cb.addEventListener('change',function(){
+      const sub=document.getElementById('h'+d+'_sub');
+      if(sub)sub.style.display=this.checked?'block':'none';
+    });
+  });
+}
+
 function init(){
   try{const c=localStorage.getItem('crm_c');if(c)C=JSON.parse(c);}catch(e){}
   try{const p=localStorage.getItem('crm_p');if(p)P=JSON.parse(p);}catch(e){}
   try{const a=localStorage.getItem('crm_a');if(a){const d=JSON.parse(a);AH=d.h;AD=d.d;}}catch(e){}
   if(!C.length)WZ();else{FP();RA();}
   showBadge(true);
+  initDoorCheckboxes();
 }
 
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,5);}
@@ -231,7 +303,7 @@ function autoLabel(type){
   return ti.l+' '+(max+1);
 }
 
-function RA(){RS();RL();if(AD)document.getElementById('AS').textContent='Last updated '+AD;if(AH)document.getElementById('AC').innerHTML=AH;}
+function RA(){RS();RL();if(AD)document.getElementById('AS').textContent='Last fetched '+AD;}
 
 function RS(){
   let u=0,s=0,o=0;
@@ -275,12 +347,14 @@ function RC(c){
     const ltv=((parseFloat(c.bl)/parseFloat(c.pv))*100).toFixed(1);
     dh+=`<div class="dt"><b>LTV:</b> ${ltv}%</div>`;
   }
+  if(c.pt)dh+=`<div class="dt"><b>Product type:</b> ${c.pt}</div>`;
   const hh=c.h&&c.h.length?`
     <div style="margin-top:10px;border-top:1px solid #f0f0ee;padding-top:10px">
       <div style="font-size:11px;color:#aaa;margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px">History</div>
       ${c.h.slice(-3).reverse().map(x=>`<div class="hrow"><div class="hdot"></div><div class="htxt">${x.d}: ${x.n}</div></div>`).join('')}
     </div>`:'';
   const rb=(st==='urgent'||st==='soon')?`<button class="bs" onclick="OR('${c.id}')">🔄 Renewed</button>`:'';
+  const exitBtn=ti.three?`<button class="bs grn" onclick="FEU('${c.id}')">📅 Find exit & upgrade dates</button>`:'';
   return `<div class="cc ${st}" id="card-${c.id}">
     <div class="r1">
       <div class="lft">
@@ -294,7 +368,8 @@ function RC(c){
         ${bd}
         <div class="acts">
           ${rb}
-          <button class="bs" onclick="FD('${c.id}')">🔍 Find deals</button>
+          <button class="claude-btn" style="padding:6px 12px;font-size:12px" onclick="FD('${c.id}')">🔍 Find deals</button>
+          ${exitBtn}
           <button class="bs" onclick="OE('${c.id}')">✏️ Edit</button>
           <button class="bs rd" onclick="DC('${c.id}')">🗑</button>
         </div>
@@ -307,85 +382,121 @@ function RC(c){
   </div>`;
 }
 
+// Build profile summary for a contract type
 function PF(t){
   const m={
     car_insurance:[['Name','pn'],['DOB','pd'],['Address','pa'],['Town','ptw'],['Postcode','ppc'],['Vehicle','vm'],['Reg','vr'],['Year','vy'],['Value (£)','vv'],['Annual mileage','vl'],['Kept overnight','vk'],['Named drivers','vd']],
-    home_insurance:[['Name','pn'],['DOB','pd'],['Address','pa'],['Town','ptw'],['Postcode','ppc'],['Joint policyholder','pjn'],['Property type','ht'],['Year built','hy'],['Bedrooms','hb'],['Wall construction','hw'],['Roof type','hrf'],['Rebuild value (£)','hrv'],['Contents value (£)','hcv'],['Voluntary excess (£)','hvex'],['Security','hs'],['Flooded before','hfl'],['Buildings claims (5yr)','hbc'],['Contents claims (5yr)','hcc'],['Buildings NCB (yrs)','hbncb'],['Contents NCB (yrs)','hcncb'],['Work from home','hwfh']],
-    energy_combined:[['Address','pa'],['Town','ptw'],['Postcode','ppc'],['Electricity kWh/yr','ek'],['Gas kWh/yr','gk'],['Elec unit rate (p/kWh)','eur'],['Gas unit rate (p/kWh)','gur'],['Standing charge (p/day)','esc'],['Payment method','ep'],['Meter type','em'],['Green preference','egr']],
-    energy_elec:[['Address','pa'],['Postcode','ppc'],['Electricity kWh/yr','ek'],['Elec unit rate (p/kWh)','eur'],['Payment method','ep'],['Meter type','em'],['Green preference','egr']],
+    home_insurance:[['Name','pn'],['DOB','pd'],['Address','pa'],['Town','ptw'],['Postcode','ppc'],['Joint policyholder','pjn'],['Property type','ht'],['Year built','hy'],['Bedrooms','hb'],['Wall construction','hw'],['Roof type','hrf'],['Rebuild value (£)','hrv'],['Contents value (£)','hcv'],['Voluntary excess (£)','hvex'],['Flooded before','hfl'],['Buildings claims (5yr)','hbc'],['Contents claims (5yr)','hcc'],['Buildings NCB (yrs)','hbncb'],['Contents NCB (yrs)','hcncb'],['Work from home','hwfh'],['Main door lock','hdl']],
+    energy_combined:[['Address','pa'],['Town','ptw'],['Postcode','ppc'],['Electricity kWh/yr','ek'],['Gas kWh/yr','gk'],['Elec unit rate (p/kWh)','eur'],['Gas unit rate (p/kWh)','gur'],['Standing charge (p/day)','esc'],['Payment method','ep'],['Meter type','em'],['Tariff preference','egr']],
+    energy_elec:[['Address','pa'],['Postcode','ppc'],['Electricity kWh/yr','ek'],['Elec unit rate (p/kWh)','eur'],['Payment method','ep'],['Meter type','em'],['Tariff preference','egr']],
     energy_gas:[['Address','pa'],['Postcode','ppc'],['Gas kWh/yr','gk'],['Gas unit rate (p/kWh)','gur'],['Payment method','ep'],['Meter type','em']],
     mortgage:[['Lender','ml'],['Balance (£)','mb'],['Monthly payment (£)','mpy'],['Current rate (%)','mrt'],['Property value (£)','mpv'],['Years remaining','myr']],
-    mobile:[['Your network','mn'],['Your handset','mh'],["Partner's network",'ppn'],["Partner's handset",'pph2']],
-    broadband:[['Address','pa'],['Town','ptw'],['Postcode','ppc']],
+    mobile:[['Your network','mn'],['Your handset','mh'],['Your contract preference','mcp2'],['Your monthly budget (£)','mmb2'],["Partner's network",'ppn'],["Partner's handset",'pph2'],["Partner's contract preference",'mpcp']],
+    broadband:[['Address','pa'],['Town','ptw'],['Postcode','ppc'],['Current provider','bpr'],['Current speed (Mbps)','bsp'],['Min. speed required','bmsp'],['Bundle preference','bbun']],
+    tv:[['Address','pa'],['Postcode','ppc']],
     parking:[['Address','pa'],['Town','ptw'],['Postcode','ppc']],
     rac:[['Name','pn'],['Postcode','ppc'],['Vehicle','vm'],['Reg','vr'],['Year','vy']],
   };
   const fs=m[t]||[['Name','pn'],['Address','pa'],['Postcode','ppc']];
-  return fs.map(([l,id])=>({l,v:P[id]||''})).filter(f=>f.v);
+  // Add home security details for home insurance
+  let extras=[];
+  if(t==='home_insurance'){
+    const sec=getHomeSecurity();
+    if(sec)extras.push({l:'Security',v:sec});
+  }
+  return [...fs.map(([l,id])=>({l,v:P[id]||''})).filter(f=>f.v),...extras];
 }
 
+function getHomeSecurity(){
+  const parts=[];
+  const ld=document.getElementById('hdl');
+  if(ld&&ld.value)parts.push('Main door: '+ld.value);
+  if(document.getElementById('hpatio')?.checked)parts.push('Patio doors ('+(document.getElementById('hpatiol')?.value||'locked')+')');
+  if(document.getElementById('hbifold')?.checked)parts.push('Bifold doors ('+(document.getElementById('hbifoldl')?.value||'locked')+')');
+  if(document.getElementById('hfrench')?.checked)parts.push('French doors ('+(document.getElementById('hfrenchl')?.value||'locked')+')');
+  const alarms=[];
+  if(document.getElementById('hal_burg_self')?.checked)alarms.push('Burglar alarm (self-monitored)');
+  if(document.getElementById('hal_burg_pro')?.checked)alarms.push('Burglar alarm (professionally monitored)');
+  if(document.getElementById('hal_smart')?.checked)alarms.push('Smart alarm');
+  if(document.getElementById('hal_smoke')?.checked)alarms.push('Smoke detectors');
+  if(document.getElementById('hal_co')?.checked)alarms.push('CO detectors');
+  if(alarms.length)parts.push('Alarms: '+alarms.join(', '));
+  const other=[];
+  if(document.getElementById('hsec_wl')?.checked)other.push('Window locks');
+  if(document.getElementById('hsec_cctv')?.checked)other.push('CCTV');
+  if(document.getElementById('hsec_light')?.checked)other.push('Security lighting');
+  if(document.getElementById('hsec_nw')?.checked)other.push('Neighbourhood Watch');
+  if(other.length)parts.push('Other: '+other.join(', '));
+  return parts.join(' | ');
+}
+
+// FIND DEALS — opens Claude.ai with pre-built prompt
 function FD(id){
   const c=C.find(x=>x.id===id);if(!c)return;
-  const el=document.getElementById('ai-'+id);
-  const pf=PF(c.t);
-  const ph=pf.length
-    ?`<div class="cpan"><h4>✅ Confirm your details before searching</h4>${pf.map(f=>`<div class="cfl"><span class="cl">${f.l}</span><span>${f.v}</span></div>`).join('')}<div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"><button class="bp" onclick="RS2('${id}')">🔍 Search with these details</button><button class="bs" onclick="ST('profile')">✏️ Edit profile</button></div></div>`
-    :`<div style="margin-bottom:10px;font-size:13px;color:#888">No profile details stored yet. <button class="bs" onclick="ST('profile')">Add profile details ↗</button></div><button class="bp" onclick="RS2('${id}')">🔍 Search anyway</button>`;
-  el.innerHTML=`<div class="aib">${ph}</div>`;
-}
-
-async function RS2(id){
-  const c=C.find(x=>x.id===id);if(!c)return;
   const ti=gt(c.t),n=du(c.e);
-  document.getElementById('ai-'+id).innerHTML=`<div class="aib"><div class="ail">✨ Searching for best current UK deals<span class="dots"></span></div></div>`;
-  const pf=PF(c.t).map(f=>f.l+': '+f.v).join(', ');
-  let ex='';
-  if(c.t==='credit_card')ex=`Current balance: £${c.bl||'?'}. Current transfer fee: ${c.cf||'?'}%. Current 0% period: ${c.pm||'?'} months. For each deal found, calculate and show the transfer fee % per year metric (fee% ÷ period in years) so deals can be compared fairly.`;
-  else if(c.t==='mortgage')ex=`Search BOTH ${P.ml||'Nationwide'} AND whole-of-market deals. Include current Bank of England base rate and analyst forecasts for rate changes through 2026-2027. Current LTV: ${c.bl&&c.pv?((parseFloat(c.bl)/parseFloat(c.pv))*100).toFixed(1)+'%':'see profile details'}.`;
-  else if(c.t==='parking')ex=`Search Sheffield City Council website specifically for: 1) parking permit renewal process, 2) whether there is a grace period after expiry during which the holder can still park legally, and 3) how long any grace period lasts.`;
-  else if(c.t==='rac')ex=`Search for current UK motor breakdown cover deals. Check whether providers offer better deals closer to renewal. Compare RAC, AA, Green Flag, Halfords and any others on Confused.com or MoneySuperMarket.`;
-  else if(c.t==='energy_combined'||c.t==='energy_elec'||c.t==='energy_gas')ex=`Current Ofgem price cap context: £1,641 Apr-Jun 2026, rising to £1,862 Jul-Sep 2026. Include Cornwall Insight or other analyst forecasts for future quarters. Based on this, recommend whether the user should fix now or wait, and for how long.`;
-  else if(c.t==='home_insurance')ex=`User has buildings NCB of ${P.hbncb||'unknown'} years and contents NCB of ${P.hcncb||'unknown'} years. Search for combined buildings and contents insurance deals. Include any current promotions or switching incentives.`;
-  const nb=c.ncb?`No-claims bonus: ${c.ncb} years. `:'';
+  const pf=PF(c.t);
+  const pfStr=pf.map(f=>f.l+': '+f.v).join('\n');
+  let extra='';
+  if(c.t==='credit_card')extra=`\nCurrent balance: £${c.bl||'?'}. Transfer fee: ${c.cf||'?'}%. 0% period: ${c.pm||'?'} months. For each deal found, calculate the transfer fee % per year (fee% ÷ period in years) so deals can be compared fairly.`;
+  else if(c.t==='mortgage')extra=`\nSearch BOTH ${P.ml||'the current lender'} AND whole-of-market deals. Include current Bank of England base rate and forecasts for 2026-2027. Current LTV: ${c.bl&&c.pv?((parseFloat(c.bl)/parseFloat(c.pv))*100).toFixed(1)+'%':'see profile'}.`;
+  else if(c.t==='parking')extra=`\nSearch Sheffield City Council website specifically for: 1) parking permit renewal process, 2) whether there is a grace period after expiry, and 3) how long any grace period lasts.`;
+  else if(c.t==='energy_combined'||c.t==='energy_elec'||c.t==='energy_gas')extra=`\nCurrent Ofgem price cap: £1,641 Apr-Jun 2026, rising to £1,862 Jul-Sep 2026. Include Cornwall Insight forecasts. Recommend whether to fix now or wait.`;
+  else if(c.t==='home_insurance')extra=`\nBuildings NCB: ${P.hbncb||'unknown'} years. Contents NCB: ${P.hcncb||'unknown'} years. Search for combined buildings and contents deals.`;
+  const nb=c.ncb?`No-claims bonus: ${c.ncb} years.\n`:'';
+  const pt=c.pt?`Product type required: ${c.pt}.\n`:'';
   const prompt=`You are a UK consumer money-saving expert helping a user in Sheffield, UK.
 
 The user has a ${c.lb} contract with ${c.pr||'their current provider'}, costing £${c.co||'unknown'}/${c.cp||'month'}, expiring in ${n===9999?'an unknown number of':n} days (${fd(c.e)}).
 
-Profile details: ${pf||'not provided'}.
-${nb}${ex}
+${nb}${pt}Profile details:
+${pfStr||'Not provided'}
+${extra}
 
 Please search the web for the best current UK deals for this contract type. Provide a practical response covering:
 1. The ideal timing to act (should they act now or wait?)
-2. The top 3 specific comparison sites or actions to take RIGHT NOW with brief explanation of each
+2. The top 3 specific comparison sites or actions to take RIGHT NOW with brief explanation
 3. One key negotiation tip for this contract type
-4. Any notable current deals, promotions or market conditions worth knowing about
+4. Any notable current deals, promotions or market conditions worth knowing
 
 Keep the response concise, practical and specific to the UK market. Use £ for all prices.`;
 
-  try{
-    const resp=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',
-        max_tokens:1000,
-        tools:[{type:'web_search_20250305',name:'web_search'}],
-        messages:[{role:'user',content:prompt}]
-      })
-    });
-    if(!resp.ok){const err=await resp.text();throw new Error(`API error ${resp.status}: ${err}`);}
-    const d=await resp.json();
-    if(d.error)throw new Error(d.error.message||'Unknown API error');
-    const txt=(d.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('\n').trim();
-    if(!txt)throw new Error('No response received');
-    document.getElementById('ai-'+id).innerHTML=`<div class="aib"><div class="ail">✨ Deal finder results — live web search ${new Date().toLocaleDateString('en-GB')}</div><div style="font-size:13px;line-height:1.8">${txt.replace(/\n\n/g,'</p><p style="margin-top:8px">').replace(/\n/g,'<br>')}</div></div>`;
-  }catch(e){
-    document.getElementById('ai-'+id).innerHTML=`<div class="aib" style="border-color:#e8b4b4"><div style="color:#922b21;font-weight:600;margin-bottom:6px">⚠ Search failed</div><div style="font-size:12px;color:#666">${e.message}<br><br>Note: The deal finder requires an internet connection and works best when opened via Claude.ai. If you are running this file locally (file://) the API call may be blocked by browser security. Try opening via a local server or through Claude chat.</div><button class="bs" style="margin-top:8px" onclick="RS2('${id}')">Try again</button></div>`;
-  }
+  openInClaude(prompt);
+
+  const el=document.getElementById('ai-'+id);
+  el.innerHTML=`<div class="info-box" style="margin-top:10px">
+    <b>✅ Claude opened in a new tab</b> with your deal search prompt ready to go. Just press <b>Send</b> in that tab to get your personalised results.<br><br>
+    <span style="font-size:12px;color:#666">Tip: copy any useful dates or deal details back here using the ✏️ Edit button.</span>
+  </div>`;
 }
 
-async function FA(){
-  document.getElementById('AC').innerHTML=`<div class="acard"><div class="ail">✨ Fetching latest advice from MoneySavingExpert, Which?, Citizens Advice and Ofgem<span class="dots"></span></div></div>`;
+// FIND EXIT & UPGRADE DATES — opens Claude.ai
+function FEU(id){
+  const c=C.find(x=>x.id===id);if(!c)return;
+  const prompt=`I have a ${c.lb} contract with ${c.pr||'my provider'}, expiring on ${fd(c.e)}.
+
+Please search ${c.pr||'the provider'}'s website and terms to find:
+1. The earliest date I can exit this contract without paying early termination fees
+2. The date I become eligible to upgrade
+3. Any early termination fee amount or policy if I leave before the exit date
+4. The process for upgrading or switching — do I need to contact them, or can it be done online?
+
+Please be specific with dates where possible, based on my contract expiry of ${fd(c.e)}.`;
+
+  openInClaude(prompt);
+
+  const el=document.getElementById('ai-'+id);
+  el.innerHTML=`<div class="info-box" style="margin-top:10px">
+    <b>✅ Claude opened in a new tab</b> to search for your exit and upgrade dates. Press <b>Send</b> in that tab, then add the dates to this contract using ✏️ Edit.
+  </div>`;
+}
+
+function openInClaude(prompt){
+  const encoded=encodeURIComponent(prompt);
+  window.open('https://claude.ai/new?q='+encoded,'_blank');
+}
+
+// ADVICE TAB — opens Claude.ai
+function FA(){
   const types=[...new Set(C.map(c=>gt(c.t).l))].join(', ')||'broadband, energy, insurance, mortgage, mobile, credit cards';
   const prompt=`You are a UK consumer finance expert.
 
@@ -399,38 +510,15 @@ Please provide a concise, practical summary covering:
 - Any recent Martin Lewis alerts or recommendations relevant to these contract types
 - Anything that has changed recently that affects renewal strategy
 
-Write in flowing paragraphs without bullet point symbols. Keep it practical, concise and specific to the UK market.`;
+Write in flowing paragraphs. Keep it practical, concise and specific to the UK market.`;
 
-  try{
-    const resp=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',
-        max_tokens:1500,
-        tools:[{type:'web_search_20250305',name:'web_search'}],
-        messages:[{role:'user',content:prompt}]
-      })
-    });
-    if(!resp.ok)throw new Error('API error '+resp.status);
-    const d=await resp.json();
-    if(d.error)throw new Error(d.error.message);
-    const txt=(d.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('\n').trim();
-    AH=`<div class="acard">
-      <div class="ail">✨ Live search — MoneySavingExpert · Which? · Citizens Advice · Ofgem</div>
-      <div style="font-size:13px;line-height:1.8">${txt.replace(/\n\n/g,'</p><p style="margin-top:8px">').replace(/\n/g,'<br>')}</div>
-      <div style="margin-top:14px;padding-top:10px;border-top:1px solid #e8e8e6;display:flex;gap:8px;flex-wrap:wrap">
-        <span style="font-size:12px;color:#888;align-self:center">If this advice suggests changes to the app:</span>
-        <a href="https://claude.ai" target="_blank" class="bs">💬 Open Claude to discuss updates ↗</a>
-      </div>
-    </div>`;
-    AD=new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
-    try{localStorage.setItem('crm_a',JSON.stringify({h:AH,d:AD}));}catch(e){}
-    document.getElementById('AC').innerHTML=AH;
-    document.getElementById('AS').textContent='Last updated '+AD;
-  }catch(e){
-    document.getElementById('AC').innerHTML=`<div class="acard" style="border-color:#e8b4b4"><div style="color:#922b21;font-weight:600">⚠ Could not fetch advice</div><div style="font-size:12px;color:#666;margin-top:4px">${e.message}</div><button class="bs" style="margin-top:8px" onclick="FA()">Try again</button></div>`;
-  }
+  const AD2=new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+  try{localStorage.setItem('crm_a',JSON.stringify({h:'',d:AD2}));}catch(e){}
+  document.getElementById('AS').textContent='Last fetched '+AD2;
+  openInClaude(prompt);
+  document.getElementById('AC').innerHTML=`<div class="info-box">
+    <b>✅ Claude opened in a new tab</b> with your advice prompt ready. Press <b>Send</b> in that tab to get the latest UK consumer tips from MoneySavingExpert, Which? and more.
+  </div>`;
 }
 
 function ST(t){
@@ -440,11 +528,54 @@ function ST(t){
   if(t==='profile')FP();
 }
 
-const PIDS=['pn','pd','pa','ptw','ppc','pph','pe','pjn','pjd','vr','vm','vy','vv','vl','vk','vd','ht','hy','hb','hw','hrf','hwfh','hrv','hcv','hvex','hs','hfl','hbc','hcc','hbncb','hcncb','ek','gk','eur','gur','esc','ep','em','egr','mn','mh','ppn','pph2','ml','mb','mpy','mrt','mpv','myr'];
-function FP(){PIDS.forEach(id=>{const el=document.getElementById(id);if(el&&P[id]!==undefined&&P[id]!=='')el.value=P[id];});}
+const PIDS=['pn','pd','pa','ptw','ppc','pph','pe','pjn','pjd','vr','vm','vy','vv','vl','vk','vd','ht','hy','hb','hw','hrf','hwfh','hwfhe','hrv','hcv','hvex','hfl','hbc','hcc','hbncb','hcncb','hdl','hpatiol','hbifoldl','hfrenchl','ek','gk','eur','gur','esc','ep','em','egr','mn','mh','mcp2','mmb2','ppn','pph2','mpcp','mpmb','bpr','bsp','bmsp','bbun','ml','mb','mpy','mrt','mpv','myr'];
+const CBIDS=['hpatio','hbifold','hfrench','hal_burg_self','hal_burg_pro','hal_smart','hal_smoke','hal_co','hsec_wl','hsec_cctv','hsec_light','hsec_nw'];
+
+function FP(){
+  PIDS.forEach(id=>{const el=document.getElementById(id);if(el&&P[id]!==undefined&&P[id]!=='')el.value=P[id];});
+  CBIDS.forEach(id=>{const el=document.getElementById(id);if(el)el.checked=!!P[id];});
+  // Show/hide door sub-panels
+  ['patio','bifold','french'].forEach(d=>{
+    const cb=document.getElementById('h'+d);
+    const sub=document.getElementById('h'+d+'_sub');
+    if(cb&&sub)sub.style.display=cb.checked?'block':'none';
+  });
+}
+
 function SP(){
   PIDS.forEach(id=>{const el=document.getElementById(id);if(el)P[id]=el.value;});
-  try{localStorage.setItem('crm_p',JSON.stringify(P));alert('Profile saved!');}catch(e){alert('Could not save profile — storage may be unavailable.');}
+  CBIDS.forEach(id=>{const el=document.getElementById(id);if(el)P[id]=el.checked;});
+  try{localStorage.setItem('crm_p',JSON.stringify(P));alert('Profile saved!');}catch(e){alert('Could not save profile.');}
+}
+
+// EXPORT DATA
+function exportData(){
+  const data={contracts:C,profile:P,exportDate:new Date().toISOString()};
+  const json=JSON.stringify(data,null,2);
+  const blob=new Blob([json],{type:'application/json'});
+  const a=document.createElement('a');
+  const today=new Date().toLocaleDateString('en-GB').replace(/\//g,'-');
+  a.href=URL.createObjectURL(blob);
+  a.download=`contracts-backup-${today}.json`;
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+}
+
+// IMPORT DATA
+function importData(event){
+  const file=event.target.files[0];if(!file)return;
+  if(!confirm('Import this file? This will replace ALL current contracts and profile data. Are you sure?')){event.target.value='';return;}
+  const reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      const data=JSON.parse(e.target.result);
+      if(data.contracts)C=data.contracts;
+      if(data.profile)P=data.profile;
+      save();FP();RA();
+      alert('✅ Data imported successfully!');
+    }catch(err){alert('Could not read this file. Please make sure it is a valid backup file exported from this app.');}
+  };
+  reader.readAsText(file);
+  event.target.value='';
 }
 
 function OA(){OM(null);}
@@ -453,6 +584,23 @@ function OE(id){OM(C.find(c=>c.id===id));}
 function OM(c){
   const isNew=!c;
   const to=TY.map(t=>`<option value="${t.t}"${c&&c.t===t.t?' selected':''}>${t.l}</option>`).join('');
+
+  // Product type options per contract type
+  const ptOpts={
+    car_insurance:['Fully comprehensive','Third party fire & theft','Third party only'],
+    home_insurance:['Buildings only','Contents only','Combined buildings & contents'],
+    energy_combined:['No preference','Fixed tariff','Variable tariff','Green tariff'],
+    energy_elec:['No preference','Fixed tariff','Variable tariff','Green tariff'],
+    energy_gas:['No preference','Fixed tariff','Variable tariff','Green tariff'],
+    broadband:['Broadband only','Broadband + phone','Broadband + TV','Full bundle'],
+    mobile:['No preference','SIM only','Handset + contract'],
+    rac:['Basic roadside','Roadside + recovery','Comprehensive (home start + onward travel)'],
+    mortgage:['No preference','Fixed rate','Tracker','Variable'],
+  };
+  const curType=c?c.t:'car_insurance';
+  const ptList=ptOpts[curType]||[];
+  const ptHtml=ptList.length?`<div class="fl"><label>Product type preference</label><select id="mpt"><option value="">No preference</option>${ptList.map(p=>`<option${c&&c.pt===p?' selected':''}>${p}</option>`).join('')}</select></div>`:'<div id="mpt_wrap"></div>';
+
   document.getElementById('MC').style.display='flex';
   document.getElementById('MC').innerHTML=`<div class="modal-bg" onclick="if(event.target===this)CM()"><div class="modal">
     <h2>${c?'✏️ Edit contract':'➕ Add contract'}</h2>
@@ -470,6 +618,7 @@ function OM(c){
       <div class="fl"><label>Expiry date</label><input id="mex" type="date" value="${c?c.e:''}"></div>
       <div class="fl"><label>Remind me (days before expiry)</label><input id="mrd" type="number" value="${c?c.rd||21:21}" min="1" max="180"></div>
     </div>
+    <div id="mpt_r">${ptHtml}</div>
     <div id="mn_r" style="display:none" class="fl"><label>No-claims bonus (years)</label><input id="mnc" type="number" value="${c?c.ncb||'':''}" min="0" max="20" placeholder="0"></div>
     <div id="mhn_r" style="display:none">
       <div class="f2">
@@ -522,6 +671,24 @@ function MTC(isNew){
   const pr=document.getElementById('mpr');if(pr&&ti.dp&&!pr.value)pr.value=ti.dp;
   const sh=(id,v,g)=>{const el=document.getElementById(id);if(el)el.style.display=v?(g?'grid':'block'):'none';};
   sh('mn_r',!!ti.ncb);sh('mhn_r',!!ti.homencb);sh('mk_r',!!ti.kwh,1);sh('m3_r',!!ti.three,1);sh('mc_r',!!ti.cc);sh('mm_r',!!ti.mort,1);
+
+  // Update product type options
+  const ptOpts={
+    car_insurance:['Fully comprehensive','Third party fire & theft','Third party only'],
+    home_insurance:['Buildings only','Contents only','Combined buildings & contents'],
+    energy_combined:['No preference','Fixed tariff','Variable tariff','Green tariff'],
+    energy_elec:['No preference','Fixed tariff','Variable tariff','Green tariff'],
+    energy_gas:['No preference','Fixed tariff','Variable tariff','Green tariff'],
+    broadband:['Broadband only','Broadband + phone','Broadband + TV','Full bundle'],
+    mobile:['No preference','SIM only','Handset + contract'],
+    rac:['Basic roadside','Roadside + recovery','Comprehensive (home start + onward travel)'],
+    mortgage:['No preference','Fixed rate','Tracker','Variable'],
+  };
+  const ptList=ptOpts[t]||[];
+  const wrap=document.getElementById('mpt_r');
+  if(wrap){
+    wrap.innerHTML=ptList.length?`<div class="fl"><label>Product type preference</label><select id="mpt"><option value="">No preference</option>${ptList.map(p=>`<option>${p}</option>`).join('')}</select></div>`:'';
+  }
 }
 
 function SM(eid){
@@ -529,7 +696,8 @@ function SM(eid){
   const lb=g('mlb');
   if(!lb){alert('Please fill in a label for this contract.');return;}
   const t=g('mt'),ti=gt(t);
-  const o={id:eid||uid(),t,lb,pr:g('mpr'),pe:g('mpe'),co:parseFloat(g('mco'))||null,cp:g('mcp'),e:g('mex')||'',rd:parseInt(g('mrd'))||ti.r,nt:g('mnt'),h:[]};
+  const isNew=!eid;
+  const o={id:eid||uid(),t,lb,pr:g('mpr'),pe:g('mpe'),co:parseFloat(g('mco'))||null,cp:g('mcp'),e:g('mex')||'',rd:parseInt(g('mrd'))||ti.r,nt:g('mnt'),pt:g('mpt')||'',h:[]};
   if(ti.ncb)o.ncb=parseInt(g('mnc'))||null;
   if(ti.homencb){o.bncb=parseInt(g('mbnc'))||null;o.cncb=parseInt(g('mcnc'))||null;}
   if(ti.kwh){o.ek=g('mek');o.gk=g('mgk');}
@@ -539,6 +707,15 @@ function SM(eid){
   if(eid){const ex=C.find(c=>c.id===eid);o.h=ex?ex.h||[]:[];C=C.map(c=>c.id===eid?o:c);}
   else C.push(o);
   CM();save();RA();
+
+  // Prompt to find exit/upgrade dates on first save for relevant contract types
+  if(isNew&&ti.three&&o.pr&&o.e){
+    setTimeout(()=>{
+      if(confirm(`✅ Contract saved!\n\nWould you like to find your earliest exit and upgrade dates for ${o.lb} with ${o.pr}?\n\nThis will open Claude in a new tab to search ${o.pr}'s policies.`)){
+        FEU(o.id);
+      }
+    },300);
+  }
 }
 
 function OR(id){
@@ -589,7 +766,6 @@ function XC(){
   const AV=(dt,rem,sum,desc)=>{
     if(!dt)return;
     const d=new Date(dt+'T00:00:00');d.setDate(d.getDate()-rem);
-    const fm=x=>x.toISOString().replace(/[-:]/g,'').split('.')[0]+'Z';
     const uid2=Date.now().toString(36)+Math.random().toString(36).slice(2,8);
     lines.push('BEGIN:VEVENT',`DTSTART;VALUE=DATE:${d.toISOString().slice(0,10).replace(/-/g,'')}`,`SUMMARY:${sum}`,`DESCRIPTION:${(desc||'').replace(/[;\n]/g,' ').slice(0,200)}`,`UID:${uid2}@contractmanager`,'END:VEVENT');
   };
@@ -603,7 +779,7 @@ function XC(){
   const b=new Blob([lines.join('\r\n')],{type:'text/calendar;charset=utf-8'});
   const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='contract-reminders.ics';
   document.body.appendChild(a);a.click();document.body.removeChild(a);
-  setTimeout(()=>alert('Calendar file downloaded!\n\nTo use it:\n• Google Calendar: Settings → Import & Export → Import\n• Apple Calendar: File → Import\n• Outlook: File → Open & Export → Import/Export\n\nThis will add reminders to your calendar so your phone notifies you automatically.'),200);
+  setTimeout(()=>alert('Calendar file downloaded!\n\nTo use it:\n• Google Calendar: Settings → Import & Export → Import\n• Apple Calendar: File → Import\n• Outlook: File → Open & Export → Import/Export'),200);
 }
 
 function WZ(){
@@ -627,7 +803,7 @@ function WZ(){
 function WF(){
   const sel=TY.filter(x=>{const el=document.getElementById('wz_'+x.t);return el&&el.checked;});
   if(!sel.length){alert('Please tick at least one contract first.');return;}
-  sel.forEach(x=>C.push({id:uid(),t:x.t,lb:autoLabel(x.t),pr:x.dp||'',pe:'',co:null,cp:'month',e:'',rd:x.r,nt:'',h:[]}));
+  sel.forEach(x=>C.push({id:uid(),t:x.t,lb:autoLabel(x.t),pr:x.dp||'',pe:'',co:null,cp:'month',e:'',rd:x.r,nt:'',pt:'',h:[]}));
   save();RA();
   setTimeout(()=>alert(`✓ ${sel.length} contract${sel.length>1?'s':''} added!\n\nNext steps:\n1. Click ✏️ Edit on each card to add expiry dates and costs\n2. Go to the Profile tab to store your personal details for deal searching\n3. Use 📅 Export reminders to add alerts to your phone calendar`),200);
 }
